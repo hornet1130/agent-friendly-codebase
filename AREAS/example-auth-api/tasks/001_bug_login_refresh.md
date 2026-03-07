@@ -25,6 +25,8 @@ The refresh token is not expired, but some users still receive `401` responses. 
 - Target command: `pnpm --filter api test auth`
 - Success oracle: reproduce the refresh-related failure, fix it, and keep existing auth tests green
 - Regression check: `pnpm turbo run test --filter=api`
+- Preferred grader: code-based
+- Evidence to capture: failing test output, passing test output, changed files, regression command result
 
 ## Gold patch or human reference
 

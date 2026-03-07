@@ -53,8 +53,8 @@ This package is meant to be copied into a target repository and then used manual
 Recommended flow:
 
 1. Pick a bounded work area such as `apps/api/src/modules/auth`.
-2. Create `AREAS/<area>/PROFILE.md` from `TEMPLATES/AREA_PROFILE.md`.
-3. Create representative tasks in `AREAS/<area>/tasks/` from `TEMPLATES/TASK.md`.
+2. Create `AREAS/<area>/PROFILE.md` from `TEMPLATES/AREA_PROFILE.md`, including boundary, dependency map, and search starting points.
+3. Create representative tasks in `AREAS/<area>/tasks/` from `TEMPLATES/TASK.md`, including success oracles, preferred grader, and evidence to capture.
 4. Score the current state as `baseline` using `RULE.md` and `EVALUATION.md`.
 5. Apply the smallest useful transformation: commands, examples, tests, area-local guidance, or structure fixes.
 6. Re-score the same area with the same task set as `transformed`.

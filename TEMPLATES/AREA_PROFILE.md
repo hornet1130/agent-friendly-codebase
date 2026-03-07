@@ -21,7 +21,13 @@
 - UI route/page entrypoints:
 - CLI/script entrypoints:
 
-## 4. Key contracts
+## 4. Dependency map
+
+- Primary dependencies:
+- Reverse dependencies:
+- Shared packages / infrastructure touched:
+
+## 5. Key contracts
 
 - Public API / route:
 - DTO / schema / zod / class-validator:
@@ -29,7 +35,7 @@
 - External services:
 - Required env vars:
 
-## 5. Canonical commands
+## 6. Canonical commands
 
 - install:
 - build:
@@ -39,7 +45,7 @@
 - dev:
 - e2e:
 
-## 6. Typical change types
+## 7. Typical change types
 
 - Bug fix:
 - Feature add:
@@ -47,31 +53,37 @@
 - Validation / schema change:
 - Test hardening:
 
-## 7. Common files touched
+## 8. Common files touched
 
 - Hot files:
 - Supporting files:
 - Dangerous shared files:
 
-## 8. Verification
+## 9. Exploration hints
+
+- Fastest starting files:
+- High-signal symbols / grep seeds:
+- Directory focus order:
+
+## 10. Verification
 
 - Fastest proof command:
 - Full proof command:
 - Known flaky tests:
 - Manual checks still required:
 
-## 9. Known failure patterns
+## 11. Known failure patterns
 
 - Pattern 1:
 - Pattern 2:
 - Pattern 3:
 
-## 10. Golden path examples
+## 12. Golden path examples
 
 - Example PR / commit / file path 1:
 - Example PR / commit / file path 2:
 
-## 11. Current AI-readiness gaps
+## 13. Current AI-readiness gaps
 
 - Gap 1:
 - Gap 2:

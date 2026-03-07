@@ -9,6 +9,8 @@
 - Tool permissions:
 - Budget:
 - Evaluator:
+- Grader approach:
+- Raw evidence / log location:
 
 ## 2. Task set summary
 
@@ -52,6 +54,8 @@
 - Strongest evidence for improvement:
 - Weakest evidence / ambiguity:
 - Missing measurements:
+- Transcript or run-log locations:
+- Grader notes:
 
 ## 7. Rule-level findings
 

@@ -19,7 +19,13 @@
 - Job/queue entrypoints: none
 - CLI/script entrypoints: area-local test command
 
-## 4. Key contracts
+## 4. Dependency map
+
+- Primary dependencies: auth token utilities, user repository, shared session types
+- Reverse dependencies: API route layer, auth e2e tests, downstream session consumers
+- Shared packages / infrastructure touched: shared auth contract package, JWT configuration, persistence layer
+
+## 5. Key contracts
 
 - Public API / route: login, refresh, logout, sessions
 - DTO / schema / zod / class-validator: login DTO, refresh DTO
@@ -27,7 +33,7 @@
 - External services: user repository, token signing service
 - Required env vars: JWT secret, session TTL
 
-## 5. Canonical commands
+## 6. Canonical commands
 
 - install: `pnpm install`
 - build: `pnpm turbo run build --filter=api`
@@ -37,7 +43,7 @@
 - dev: `pnpm turbo run dev --filter=api`
 - e2e: `pnpm --filter api test:e2e auth`
 
-## 6. Typical change types
+## 7. Typical change types
 
 - Bug fix: adjust refresh-token validation
 - Feature add: add session list retrieval
@@ -45,31 +51,37 @@
 - Validation / schema change: add a DTO field
 - Test hardening: add an auth edge-case fixture
 
-## 7. Common files touched
+## 8. Common files touched
 
 - Hot files: auth controller, auth service, auth DTOs, auth tests
 - Supporting files: token utilities, shared types
 - Dangerous shared files: shared auth contract package
 
-## 8. Verification
+## 9. Exploration hints
+
+- Fastest starting files: auth controller, auth service, auth DTOs, auth tests
+- High-signal symbols / grep seeds: `refresh`, `login`, `session`, `Jwt`, `AuthGuard`, `token`
+- Directory focus order: `apps/api/src/modules/auth` -> `apps/api/test/auth` -> `packages/shared/auth-contract`
+
+## 10. Verification
 
 - Fastest proof command: `pnpm --filter api test auth`
 - Full proof command: `pnpm turbo run test --filter=api`
 - Known flaky tests: none documented yet
 - Manual checks still required: confirm refresh flow when local env values differ
 
-## 9. Known failure patterns
+## 11. Known failure patterns
 
 - missing DTO validation
 - JWT secret mismatch across environments
 - shared contract updates without downstream test updates
 
-## 10. Golden path examples
+## 12. Golden path examples
 
 - Example PR / commit / file path 1: add a login failure error code
 - Example PR / commit / file path 2: split session service from auth service
 
-## 11. Current AI-readiness gaps
+## 13. Current AI-readiness gaps
 
 - the area-only test command is known informally but not surfaced everywhere it should be
 - session-management contract examples are too thin

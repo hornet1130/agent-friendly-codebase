@@ -52,7 +52,9 @@ Try to infer these from the prompt or repository. Ask only when necessary.
 Produce:
 
 - area boundary summary
+- dependency map and likely blast radius
 - key entrypoints and contracts
+- search starting points for future runs
 - canonical commands
 - initial missing-information list
 - proposed task set outline
@@ -77,6 +79,7 @@ Produce:
 - readiness score breakdown
 - dynamic task score breakdown
 - total score
+- grader approach and evidence locations
 - supporting evidence per metric
 - confidence and known measurement gaps
 

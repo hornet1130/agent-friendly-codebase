@@ -23,6 +23,8 @@
 - Target command:
 - Success oracle:
 - Regression check:
+- Preferred grader: code-based | model-based | human | hybrid
+- Evidence to capture:
 
 ## Gold patch or human reference
 

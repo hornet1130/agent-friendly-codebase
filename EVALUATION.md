@@ -128,6 +128,14 @@ Each task should capture at least:
 - validation command
 - success oracle
 
+### Grader choice
+
+Prefer code-based graders for coding work whenever success can be made executable.
+
+- Use code-based grading when tests, builds, or deterministic checks exist.
+- Use model-based or human grading only when success cannot be reduced to a reliable executable check.
+- Preserve raw logs, transcripts, or equivalent run evidence when available so later comparisons can be audited.
+
 ### D1. Resolve rate (`0..20`)
 
 `resolve_rate = resolved_tasks / total_tasks`
