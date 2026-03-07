@@ -1,12 +1,46 @@
 # codebase-for-ai
 
-Publishable `skills.sh` repository for the `codebase-for-ai` skill.
+`codebase-for-ai` is a `skills.sh` skill for making a bounded work area easier for AI agents to navigate, change, and verify.
 
 ## Install
 
 ```bash
 npx skills add https://github.com/<owner>/<repo> --skill codebase-for-ai
 ```
+
+## When to Use
+
+Use this skill when you want an agent to work on a codebase more like a good teammate and less like a tourist.
+
+It is designed for four kinds of work:
+
+- define a bounded work area
+- evaluate how AI-friendly that area is
+- transform the area to reduce agent friction
+- compare baseline and transformed states with the same task set
+
+## How to Ask
+
+Good requests are concrete about the area and the goal. For example:
+
+- `Use codebase-for-ai to evaluate apps/api/src/modules/auth`
+- `Use codebase-for-ai to define the checkout work area and identify the blast radius`
+- `Use codebase-for-ai to transform packages/shared/http-client so an AI agent can ship bug fixes with less context hunting`
+- `Use codebase-for-ai to compare the baseline and transformed states of apps/web/src/features/checkout`
+- `Use codebase-for-ai on this repo, but keep the result chat-only unless I ask you to persist files`
+
+## What You Get
+
+Depending on the request, the skill produces some combination of:
+
+- work-area boundaries and entrypoints
+- canonical commands and validation paths
+- contract and blast-radius mapping
+- readiness scoring
+- dynamic task evaluation plans
+- baseline vs transformed comparisons
+
+By default, the result is returned in chat. It only writes files when the user explicitly asks for persisted artifacts.
 
 ## How It Was Built
 
@@ -27,6 +61,14 @@ Think of a codebase like a workshop for an agent. A good workshop has labeled dr
 
 The bias is toward small executable proofs over long prose. More documentation is not automatically better. The goal is to give the agent the fewest high-value artifacts that make navigation, change, and verification reliable.
 
+Skills work best when they use progressive disclosure:
+
+- short activation metadata
+- a thin `SKILL.md`
+- deeper references and helper scripts only when needed
+
+That is the design here as well. The always-loaded part stays small, and the heavier scoring or maintenance logic lives behind references and helper scripts.
+
 ## Layout
 
 ```text
@@ -43,28 +85,10 @@ skills/
     scripts/calculate_score.py
 ```
 
-## Verify
+## Maintainer Notes
 
-```bash
-python3 -m py_compile skills/codebase-for-ai/scripts/calculate_score.py
-python3 -m py_compile skills/codebase-for-ai/scripts/build_self_eval_metrics.py
-sh skills/codebase-for-ai/scripts/smoke_test.sh
-sh skills/codebase-for-ai/scripts/self_eval_check.sh
-```
-
-## Self Benchmark
-
-```bash
-python3 skills/codebase-for-ai/scripts/build_self_eval_metrics.py path/to/self-eval-run.json --out path/to/metrics.json
-python3 skills/codebase-for-ai/scripts/calculate_score.py path/to/metrics.json
-```
-
-Start from `skills/codebase-for-ai/assets/TEMPLATES/SELF_EVAL_RUN.json` and replace all `REPLACE_WITH_...` placeholders first.
-
-For repeated runs:
-
-```bash
-python3 skills/codebase-for-ai/scripts/summarize_self_eval_runs.py run-01.json run-02.json run-03.json
-```
+- Packaging and validation workflow: `skills/codebase-for-ai/references/MAINTENANCE.md`
+- Fixed self-benchmark task set: `skills/codebase-for-ai/references/SELF_EVAL.md`
+- Scoring model and qualitative bands: `skills/codebase-for-ai/references/EVALUATION.md`
 
 Only deployable skill files are tracked in this repository.
