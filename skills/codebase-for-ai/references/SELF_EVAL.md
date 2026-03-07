@@ -26,6 +26,7 @@ Keep these fixed when comparing self-evaluation results across revisions:
 ### SE-001 Packaging layout drift
 
 - Type: repo QA
+- Start here: `README.md`
 - Problem statement: keep the published tree and install instructions aligned after packaging changes
 - Relevant files: `README.md`, `skills/codebase-for-ai/SKILL.md`, `skills/codebase-for-ai/agents/openai.yaml`
 - Validation command: `sh skills/codebase-for-ai/scripts/self_eval_check.sh`
@@ -34,6 +35,7 @@ Keep these fixed when comparing self-evaluation results across revisions:
 ### SE-002 Smoke validation upkeep
 
 - Type: test hardening
+- Start here: `skills/codebase-for-ai/scripts/smoke_test.sh`
 - Problem statement: preserve a deterministic package-level smoke path when helper scripts or score formatting change
 - Relevant files: `skills/codebase-for-ai/scripts/smoke_test.sh`, `skills/codebase-for-ai/scripts/calculate_score.py`, `skills/codebase-for-ai/references/MAINTENANCE.md`
 - Validation command: `sh skills/codebase-for-ai/scripts/smoke_test.sh`
@@ -42,6 +44,7 @@ Keep these fixed when comparing self-evaluation results across revisions:
 ### SE-003 Score-schema contract alignment
 
 - Type: contract update
+- Start here: `skills/codebase-for-ai/scripts/calculate_score.py`
 - Problem statement: keep the scoring script and scoring-model reference aligned when evaluation fields change
 - Relevant files: `skills/codebase-for-ai/references/EVALUATION.md`, `skills/codebase-for-ai/scripts/calculate_score.py`
 - Validation command: `python3 -m py_compile skills/codebase-for-ai/scripts/calculate_score.py`
@@ -50,6 +53,7 @@ Keep these fixed when comparing self-evaluation results across revisions:
 ### SE-004 Audit-only validation regression
 
 - Type: bug fix
+- Start here: `skills/codebase-for-ai/scripts/calculate_score.py`
 - Problem statement: prevent audit-only payloads from silently accepting `dynamic` data or malformed modes
 - Relevant files: `skills/codebase-for-ai/scripts/calculate_score.py`, `skills/codebase-for-ai/references/EVALUATION.md`, `skills/codebase-for-ai/references/MAINTENANCE.md`
 - Validation command: `sh skills/codebase-for-ai/scripts/smoke_test.sh`
@@ -58,6 +62,7 @@ Keep these fixed when comparing self-evaluation results across revisions:
 ### SE-005 Maintenance knowledge update
 
 - Type: knowledge persistence
+- Start here: `skills/codebase-for-ai/references/MAINTENANCE.md`
 - Problem statement: save recurring packaging and verification gotchas in a stable location instead of chat-only memory
 - Relevant files: `skills/codebase-for-ai/references/MAINTENANCE.md`, `skills/codebase-for-ai/SKILL.md`
 - Validation command: `sh skills/codebase-for-ai/scripts/self_eval_check.sh`
@@ -66,6 +71,7 @@ Keep these fixed when comparing self-evaluation results across revisions:
 ### SE-006 Persisted artifact contract upkeep
 
 - Type: refactor
+- Start here: `skills/codebase-for-ai/SKILL.md`
 - Problem statement: keep the persisted output contract aligned with the bundled templates when artifact paths change
 - Relevant files: `skills/codebase-for-ai/SKILL.md`, `skills/codebase-for-ai/assets/TEMPLATES/AREA_PROFILE.md`, `skills/codebase-for-ai/assets/TEMPLATES/TASK.md`, `skills/codebase-for-ai/assets/TEMPLATES/EVALUATION_REPORT.md`
 - Validation command: `sh skills/codebase-for-ai/scripts/self_eval_check.sh`
@@ -74,6 +80,7 @@ Keep these fixed when comparing self-evaluation results across revisions:
 ### SE-007 Self-task-set completeness
 
 - Type: evaluation readiness
+- Start here: `skills/codebase-for-ai/references/SELF_EVAL.md`
 - Problem statement: preserve a fixed, bounded self-task set so future self-comparisons do not drift
 - Relevant files: `skills/codebase-for-ai/references/SELF_EVAL.md`, `skills/codebase-for-ai/scripts/self_eval_check.sh`
 - Validation command: `sh skills/codebase-for-ai/scripts/self_eval_check.sh`
@@ -82,6 +89,7 @@ Keep these fixed when comparing self-evaluation results across revisions:
 ### SE-008 Agent metadata drift
 
 - Type: packaging
+- Start here: `skills/codebase-for-ai/agents/openai.yaml`
 - Problem statement: keep UI-facing metadata and packaged skill naming aligned after renames or scope changes
 - Relevant files: `skills/codebase-for-ai/agents/openai.yaml`, `README.md`, `skills/codebase-for-ai/SKILL.md`
 - Validation command: `sh skills/codebase-for-ai/scripts/self_eval_check.sh`

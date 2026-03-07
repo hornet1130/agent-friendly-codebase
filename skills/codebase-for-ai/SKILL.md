@@ -6,119 +6,129 @@ disable-model-invocation: true
 
 # Purpose
 
-Use this skill to do one of four things for a **bounded work area** inside a repository.
+Use this skill on a **bounded work area** to do one of four things:
 
-1. **Define** the work area.
-2. **Transform** the work area to be more AI-agent friendly.
-3. **Evaluate** the work area quantitatively.
-4. **Compare** baseline and transformed states.
+1. `define`
+2. `transform`
+3. `evaluate`
+4. `compare`
 
-This skill is intentionally thin. It should orchestrate work by reading `references/RULE.md`, `references/EVALUATION.md`, the relevant checklist under `references/CHECKLISTS/`, and any area-specific profile files in the target repository. Read `assets/TEMPLATES/` only when the user explicitly asks to persist artifacts into files. Do not duplicate long rules here.
+Keep this file thin. Read the rules, score model, relevant checklist, and any area-local artifacts. Read templates only when the user asked to persist files.
 
-If the repository stack is clear, read the smallest relevant stack overlay:
+## Work area
+
+A work area is a bounded unit of work defined by:
+
+- primary code paths
+- entrypoints
+- public contracts
+- commands used to build, run, and validate it
+- typical change types
+- representative tasks
+
+If the user names only a path, infer the smallest reasonable work area around it.
+
+## Inputs
+
+Infer these unless asking is necessary:
+
+- target area identifier or path
+- goal: `define`, `transform`, `evaluate`, or `compare`
+- state under test: `baseline`, `transformed`, or both
+- persistence target: default to chat-only
+
+## Read path
+
+Read in this order:
+
+1. `references/RULE.md`
+2. `references/EVALUATION.md`
+3. the relevant checklist under `references/CHECKLISTS/`
+4. `AREAS/<area>/PROFILE.md` if present
+5. existing tasks, reports, and metrics for that area
+
+If the repository stack is obvious, read only the smallest matching overlay:
 
 - `references/node-monorepo.md`
 - `references/go-service.md`
 - `references/python-service.md`
 
-Do not read all overlays by default. Pick only the one that matches the target area.
+Read `references/MAINTENANCE.md` only for packaging, smoke-test, or score-script maintenance on this skill itself.
+Read `references/SELF_EVAL.md` only when evaluating or maintaining `codebase-for-ai` itself.
 
-Read `references/MAINTENANCE.md` only when you need packaging, smoke-test, or score-script maintenance guidance for this skill itself.
+## Output contract
 
-Read `references/SELF_EVAL.md` only when you are evaluating or maintaining the `codebase-for-ai` skill package itself and need the fixed self-task set.
-
-# Core definitions
-
-A **work area** is not just a folder. It is a bounded unit of work defined by:
-
-- primary code paths
-- entrypoints
-- public contracts
-- commands used to build/test/run it
-- typical change types
-- representative task set
-
-If the user names only a path, infer the smallest reasonable work area around that path.
-
-# Required inputs
-
-Try to infer these from the prompt or repository. Ask only when necessary.
-
-- target area identifier or path
-- goal: `define`, `transform`, `evaluate`, or `compare`
-- state under test: `baseline`, `transformed`, or both
-- persistence target: default to chat-only; write files under `AREAS/<area>/...` only if the user asks for persisted artifacts
-
-# Always read in this order
-
-1. `references/RULE.md`
-2. `references/EVALUATION.md`
-3. `references/CHECKLISTS/WORK.md`, `references/CHECKLISTS/SAFE_TRANSFORM.md`, or `references/CHECKLISTS/EVALUATION.md` as applicable
-4. `AREAS/<area>/PROFILE.md` if present
-5. existing task files and previous reports for the same area
-
-# Output contract
-
-## When goal = define
+### `define`
 
 Produce:
 
 - area boundary summary
 - dependency map and likely blast radius
 - key entrypoints and contracts
-- search starting points for future runs
+- search starting points
 - canonical commands
-- initial missing-information list
+- missing-information list
 - proposed task set outline
 
-## When goal = transform
+### `transform`
 
 Produce:
 
 - baseline gap table against `references/RULE.md`
-- minimal set of changes needed to satisfy the rules
-- artifact plan: docs, scripts, examples, tests, scoped instructions
+- smallest changes that improve the target rules
+- artifact plan for docs, scripts, examples, tests, or scoped instructions
 - changed or proposed file list
-- validation plan and remaining-risk summary
+- validation plan and remaining risks
 - post-change evaluation plan
 
-Prefer **minimal, load-bearing artifacts** over broad documentation dumps.
+Prefer minimal, load-bearing artifacts over documentation bulk.
 
-## When goal = evaluate
+### `evaluate`
 
-Produce:
+Produce numeric results, not prose only:
 
 - readiness score breakdown
 - dynamic task score breakdown
 - total score
 - grader approach and evidence locations
 - supporting evidence per metric
-- confidence and known measurement gaps
+- confidence and measurement gaps
 
-Do not output only prose. Always output numeric results.
-
-## When goal = compare
+### `compare`
 
 Produce:
 
 - side-by-side score table
 - absolute delta
 - relative delta
-- strongest improvement areas
+- strongest improvements
 - remaining blockers
-- recommendation: keep / revise / rollback / expand
+- recommendation: keep, revise, rollback, or expand
 
-# Full pipeline mode
+## Workflow
 
-If the user asks for the full pipeline, run these stages in order:
+If the user asks for the full pipeline, run:
 
 1. `define`
-2. `evaluate` the baseline state
-3. `transform` with safety gates
-4. `evaluate` the transformed state
+2. baseline `evaluate`
+3. `transform`
+4. transformed `evaluate`
 5. `compare`
 
-If the user asks for persisted outputs, write them under:
+For transformations:
+
+1. bound the area
+2. map entrypoints, contracts, commands, and tests
+3. record the baseline proof commands
+4. score the baseline
+5. apply or propose the smallest high-value changes
+6. re-run area proof first, then broader checks
+7. re-run the same evaluation logic
+8. compare baseline and transformed states under the same conditions
+
+## Persisted outputs
+
+Only write files when the user asks. Default paths:
 
 - `AREAS/<area>/PROFILE.md`
 - `AREAS/<area>/tasks/*.md`
@@ -128,21 +138,9 @@ If the user asks for persisted outputs, write them under:
 - `AREAS/<area>/metrics/baseline.json`
 - `AREAS/<area>/metrics/transformed.json`
 
-# Transformation workflow
+## Helpers
 
-1. Bound the work area.
-2. Map entrypoints, contracts, commands, and tests.
-3. Capture the trusted baseline proof commands.
-4. Score the baseline using `references/EVALUATION.md`.
-5. Identify the smallest set of artifacts or codebase changes that improve the score.
-6. Apply or propose those changes.
-7. Re-run area-scoped proof first, then broader regression checks.
-8. Re-run the same evaluation logic.
-9. Compare baseline vs transformed using the same task set and same conditions.
-
-# Optional helper scripts
-
-This skill bundles deterministic helpers under `scripts/`.
+This skill bundles:
 
 - `scripts/smoke_test.sh`
 - `scripts/self_eval_check.sh`
@@ -150,44 +148,19 @@ This skill bundles deterministic helpers under `scripts/`.
 - `scripts/summarize_self_eval_runs.py`
 - `scripts/calculate_score.py`
 
-Use `scripts/smoke_test.sh` when validating the packaged skill before publishing or after modifying its bundled files.
+Packaging and validation details live in `references/MAINTENANCE.md`.
 
-Use `scripts/self_eval_check.sh` when validating that the packaged self-evaluation task set and its supporting files are still intact.
+## Guardrails
 
-Use `scripts/build_self_eval_metrics.py` when you have a completed self-evaluation run file and need a deterministic metrics JSON for `scripts/calculate_score.py`.
-
-Use `scripts/summarize_self_eval_runs.py` when you have repeated self-evaluation run files and need median and spread across runs.
-
-Use `scripts/calculate_score.py` only when the user wants machine-generated score output files or deterministic score formatting. Do not assume file output is required for a normal evaluation.
-
-# Evaluation workflow
-
-Use two layers.
-
-1. **Static readiness audit**: structure, commands, contracts, docs, examples.
-2. **Dynamic task evaluation**: actual representative tasks executed under fixed conditions.
-
-If dynamic tasks are missing, explicitly say the evaluation is **audit-only** and incomplete.
-
-# Guardrails
-
-- Do not treat “more documentation” as improvement by default.
-- Keep always-loaded instructions short; move detail into supporting files.
+- Do not treat more documentation as improvement by default.
+- Keep always-loaded guidance short and push detail into supporting files.
 - Prefer area-scoped guidance over repo-wide blanket rules.
 - Prefer executable verification over narrative claims.
-- Prefer representative tasks from real work history over synthetic toy tasks.
-- Never compare baseline and transformed states with different task sets, different budgets, or different agent scaffolds.
-- Never claim the transformation is safe unless the named proof path and regression checks were actually run, or you clearly state that safety is unproven.
+- Prefer representative tasks from real work history over toy tasks.
+- Never compare runs that changed task set, budget, tools, or scaffolding.
+- Never claim a transformation is safe unless the named proof path and regression checks were run, or you state that safety is unproven.
 
-# Expected repository artifacts
-
-Recommended structure:
-
-- `AREAS/<area>/PROFILE.md`
-- `AREAS/<area>/tasks/*.md`
-- `AREAS/<area>/reports/*.md`
-- `AREAS/<area>/metrics/*.json`
-- optional area-local docs/examples/tests/scripts
+## Maintenance notes
 
 When maintaining this skill itself:
 
@@ -196,13 +169,5 @@ When maintaining this skill itself:
 - keep scoring-model changes in `references/EVALUATION.md`
 - keep workflow changes in `SKILL.md`
 
-# Report style
-
-Use compact headings and tables when useful. Separate:
-
-- facts
-- scores
-- decisions
-- unknowns
-
-When evidence is partial, mark the metric as estimated or missing rather than pretending it was measured.
+Use compact headings and separate facts, scores, decisions, and unknowns.
+Mark partial evidence as estimated or missing.

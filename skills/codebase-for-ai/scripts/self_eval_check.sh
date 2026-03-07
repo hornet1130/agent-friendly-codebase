@@ -40,12 +40,20 @@ if [ "$task_count" -ne 8 ]; then
   echo "expected 8 self-eval tasks, found $task_count" >&2
   exit 1
 fi
+start_here_count="$(grep -c '^- Start here:' "$self_eval")"
+if [ "$start_here_count" -ne 8 ]; then
+  echo "expected 8 self-eval start-here hints, found $start_here_count" >&2
+  exit 1
+fi
 
 grep -q 'references/MAINTENANCE.md' "$skill"
 grep -q 'references/SELF_EVAL.md' "$skill"
 grep -q 'scripts/self_eval_check.sh' "$skill"
 grep -q 'scripts/build_self_eval_metrics.py' "$skill"
 grep -q 'scripts/summarize_self_eval_runs.py' "$skill"
+grep -q '^## Command matrix$' "$maintenance"
+grep -q '^## Contract surface map$' "$maintenance"
+grep -q '^## Exploration starting points$' "$maintenance"
 grep -q 'scripts/self_eval_check.sh' "$readme"
 grep -q 'scripts/build_self_eval_metrics.py' "$readme"
 grep -q 'scripts/summarize_self_eval_runs.py' "$readme"

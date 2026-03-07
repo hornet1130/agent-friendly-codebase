@@ -11,6 +11,32 @@ Treat `skills/codebase-for-ai/` as the bounded work area when maintaining this s
 - important dependencies: `README.md`, Python 3, POSIX shell, grep-based validation commands
 - reverse dependencies: the root install command, packaged skill loading via `--skill codebase-for-ai`, and any automation that relies on `scripts/calculate_score.py`
 
+## Command matrix
+
+Run commands from the repository root.
+
+| Need | Command | When to use it |
+|---|---|---|
+| install | `N/A` | This package ships plain files and helper scripts. No package install step is required beyond having `python3` and `sh`. |
+| build | `python3 -m py_compile skills/codebase-for-ai/scripts/calculate_score.py skills/codebase-for-ai/scripts/build_self_eval_metrics.py` | Fast syntax proof after script edits. |
+| test | `sh skills/codebase-for-ai/scripts/smoke_test.sh` | Fastest trusted area-scoped proof for score formatting and audit-only validation. |
+| lint | `N/A` | No dedicated linter is bundled. Use `py_compile` plus the shell checks as the canonical validation path. |
+| dev | `N/A` | This skill package has no long-running dev server. |
+| regression | `sh skills/codebase-for-ai/scripts/self_eval_check.sh` | Broader package regression after docs, metadata, templates, or helper changes. |
+
+Use the `test` row before the `regression` row when both apply.
+
+## Contract surface map
+
+Treat these files as the source of truth for the package contracts.
+
+| Contract surface | Source of truth | Checked by |
+|---|---|---|
+| score model and formulas | `references/EVALUATION.md`, `scripts/calculate_score.py` | `python3 -m py_compile ...`, `sh scripts/smoke_test.sh` |
+| self-eval task set and run evidence contract | `references/SELF_EVAL.md`, `assets/TEMPLATES/SELF_EVAL_RUN.json`, `scripts/build_self_eval_metrics.py` | `sh scripts/self_eval_check.sh` |
+| persisted artifact paths | `SKILL.md`, `assets/TEMPLATES/AREA_PROFILE.md`, `assets/TEMPLATES/TASK.md`, `assets/TEMPLATES/EVALUATION_REPORT.md` | `sh scripts/self_eval_check.sh` |
+| package identity and install surface | `README.md`, `SKILL.md`, `agents/openai.yaml` | `sh scripts/self_eval_check.sh` |
+
 ## Canonical smoke test
 
 Run these commands from the repository root:
@@ -68,6 +94,16 @@ python3 skills/codebase-for-ai/scripts/summarize_self_eval_runs.py run-01.json r
 ```
 
 Prefer reporting median and spread from repeated runs over a single lucky run.
+
+## Exploration starting points
+
+Use these first when the task is obvious:
+
+- score output or scoring drift: `scripts/calculate_score.py`
+- run-file schema or derived metrics drift: `scripts/build_self_eval_metrics.py`
+- package layout or metadata drift: `README.md`, `SKILL.md`, `agents/openai.yaml`
+- validation-path drift: `scripts/smoke_test.sh`, `scripts/self_eval_check.sh`
+- task-set drift: `references/SELF_EVAL.md`
 
 ## Worked example
 
