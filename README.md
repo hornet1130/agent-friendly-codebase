@@ -174,6 +174,15 @@ python scripts/calculate_score.py \
 
 Audit-only example metrics are bundled at `assets/example_audit_only_metrics.json`.
 
+## Validation
+
+This repository uses only the Python standard library.
+
+- Syntax check: `PYTHONDONTWRITEBYTECODE=1 python3 -m py_compile scripts/*.py tests/*.py`
+- Test: `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -v`
+- Audit-only smoke check: `python3 scripts/calculate_score.py assets/example_audit_only_metrics.json`
+- Full example comparison: `python3 scripts/calculate_score.py AREAS/example-auth-api/metrics/baseline.json AREAS/example-auth-api/metrics/transformed.json`
+
 ## Manual prompts
 
 Use prompts like these after copying the skill into the target repository.
