@@ -19,6 +19,7 @@ skills/
     assets/TEMPLATES/
     scripts/smoke_test.sh
     scripts/self_eval_check.sh
+    scripts/build_self_eval_metrics.py
     scripts/calculate_score.py
 ```
 
@@ -26,8 +27,18 @@ skills/
 
 ```bash
 python3 -m py_compile skills/codebase-for-ai/scripts/calculate_score.py
+python3 -m py_compile skills/codebase-for-ai/scripts/build_self_eval_metrics.py
 sh skills/codebase-for-ai/scripts/smoke_test.sh
 sh skills/codebase-for-ai/scripts/self_eval_check.sh
 ```
+
+## Self Benchmark
+
+```bash
+python3 skills/codebase-for-ai/scripts/build_self_eval_metrics.py path/to/self-eval-run.json --out path/to/metrics.json
+python3 skills/codebase-for-ai/scripts/calculate_score.py path/to/metrics.json
+```
+
+Start from `skills/codebase-for-ai/assets/TEMPLATES/SELF_EVAL_RUN.json` and replace all `REPLACE_WITH_...` placeholders first.
 
 Only deployable skill files are tracked in this repository.

@@ -96,3 +96,42 @@ For full self-evaluation runs, record at least:
 - files read before the first relevant hit
 - human interventions needed to finish the task
 - whether downstream tasks got cheaper after earlier fixes
+
+## Run file contract
+
+When recording a full self-evaluation run, create a JSON file based on `assets/TEMPLATES/SELF_EVAL_RUN.json`.
+Replace every `REPLACE_WITH_...` placeholder before running the builder script.
+
+Required top-level keys:
+
+- `label`
+- `readiness`
+- `tasks`
+
+Optional top-level keys:
+
+- `sequence_gain`
+- `cost_reduction_rate`
+- `notes`
+
+Each task entry must include:
+
+- `task_id`
+- `task_type`
+- `resolved`
+- `valid_patch`
+- `regression_free`
+- `files_read`
+- `gold_files`
+- `first_relevant_read_index`
+- `human_intervention_needed`
+- `review_accepted`
+
+Use `first_relevant_read_index = 0` when no relevant file was reached. Otherwise use a `1`-based index into `files_read`.
+
+After filling the run file, convert it to a metrics JSON with:
+
+```bash
+python3 skills/codebase-for-ai/scripts/build_self_eval_metrics.py path/to/self-eval-run.json --out path/to/metrics.json
+python3 skills/codebase-for-ai/scripts/calculate_score.py path/to/metrics.json
+```
