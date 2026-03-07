@@ -20,6 +20,7 @@ skills/
     scripts/smoke_test.sh
     scripts/self_eval_check.sh
     scripts/build_self_eval_metrics.py
+    scripts/summarize_self_eval_runs.py
     scripts/calculate_score.py
 ```
 
@@ -40,5 +41,11 @@ python3 skills/codebase-for-ai/scripts/calculate_score.py path/to/metrics.json
 ```
 
 Start from `skills/codebase-for-ai/assets/TEMPLATES/SELF_EVAL_RUN.json` and replace all `REPLACE_WITH_...` placeholders first.
+
+For repeated runs:
+
+```bash
+python3 skills/codebase-for-ai/scripts/summarize_self_eval_runs.py run-01.json run-02.json run-03.json
+```
 
 Only deployable skill files are tracked in this repository.

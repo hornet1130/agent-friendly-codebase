@@ -61,6 +61,14 @@ python3 skills/codebase-for-ai/scripts/calculate_score.py path/to/metrics.json
 The builder script validates the run file before emitting metrics. Do not claim `ATPS` unless this path succeeds on a completed run file.
 Raw template placeholders are rejected on purpose.
 
+For repeated runs under fixed conditions, summarize them with:
+
+```bash
+python3 skills/codebase-for-ai/scripts/summarize_self_eval_runs.py run-01.json run-02.json run-03.json
+```
+
+Prefer reporting median and spread from repeated runs over a single lucky run.
+
 ## Worked example
 
 The bundled smoke test creates this minimal audit-only input:
@@ -105,6 +113,8 @@ This is the canonical example for verifying that packaging and audit-only scorin
   The context trace is malformed.
 - `self-eval run still contains template placeholder values`
   The run file was copied from the template but not filled with real evidence yet.
+- `at least one self-eval run json path is required`
+  The summary script was called without any completed run files.
 
 ## Knowledge persistence
 

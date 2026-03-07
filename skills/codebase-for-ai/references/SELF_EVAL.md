@@ -135,3 +135,13 @@ After filling the run file, convert it to a metrics JSON with:
 python3 skills/codebase-for-ai/scripts/build_self_eval_metrics.py path/to/self-eval-run.json --out path/to/metrics.json
 python3 skills/codebase-for-ai/scripts/calculate_score.py path/to/metrics.json
 ```
+
+## Repeated-run summary
+
+If you run the self-benchmark multiple times under fixed conditions, summarize the runs with:
+
+```bash
+python3 skills/codebase-for-ai/scripts/summarize_self_eval_runs.py run-01.json run-02.json run-03.json
+```
+
+The summary reports per-run scores plus median, mean, min, and max for `ACRS`, `ATPS`, `AIFS`, and dynamic sub-scores.

@@ -147,6 +147,7 @@ This skill bundles deterministic helpers under `scripts/`.
 - `scripts/smoke_test.sh`
 - `scripts/self_eval_check.sh`
 - `scripts/build_self_eval_metrics.py`
+- `scripts/summarize_self_eval_runs.py`
 - `scripts/calculate_score.py`
 
 Use `scripts/smoke_test.sh` when validating the packaged skill before publishing or after modifying its bundled files.
@@ -154,6 +155,8 @@ Use `scripts/smoke_test.sh` when validating the packaged skill before publishing
 Use `scripts/self_eval_check.sh` when validating that the packaged self-evaluation task set and its supporting files are still intact.
 
 Use `scripts/build_self_eval_metrics.py` when you have a completed self-evaluation run file and need a deterministic metrics JSON for `scripts/calculate_score.py`.
+
+Use `scripts/summarize_self_eval_runs.py` when you have repeated self-evaluation run files and need median and spread across runs.
 
 Use `scripts/calculate_score.py` only when the user wants machine-generated score output files or deterministic score formatting. Do not assume file output is required for a normal evaluation.
 
