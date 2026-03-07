@@ -44,6 +44,20 @@ Interpretation:
 - `50..69`: partially workable, high guidance cost
 - `<50`: human-dependent area
 
+Three-level summary band:
+
+- `good`
+  - full evaluation: `AIFS >= 85`
+  - audit-only proxy: `ACRS >= 32`
+- `so-so`
+  - full evaluation: `60 <= AIFS < 85`
+  - audit-only proxy: `24 <= ACRS < 32`
+- `bad`
+  - full evaluation: `AIFS < 60`
+  - audit-only proxy: `ACRS < 24`
+
+Use the audit-only band only as a static-readiness proxy. Do not confuse it with a full dynamic result.
+
 ## ACRS: static readiness audit
 
 Each readiness category is scored from `0` to `8`.
@@ -218,6 +232,7 @@ Use `full evaluation` only when static and dynamic data are both available.
 Every serious result should record:
 
 - `ACRS`, `ATPS`, and `AIFS`
+- three-level AI-friendliness summary band
 - readiness breakdown
 - dynamic breakdown
 - task-level pass or fail

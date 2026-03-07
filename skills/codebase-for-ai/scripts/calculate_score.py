@@ -190,6 +190,41 @@ def rating(aifs: float | None) -> str:
     return "human-dependent area"
 
 
+def ai_friendliness_band(scores: Dict[str, Any]) -> Dict[str, str]:
+    if scores["AIFS"] is None:
+        value = float(scores["ACRS"])
+        if value >= 32:
+            label = "good"
+            description = "AI-friendly on static readiness"
+        elif value >= 24:
+            label = "so-so"
+            description = "workable, but static friction remains"
+        else:
+            label = "bad"
+            description = "not yet AI-friendly on static readiness"
+        return {
+            "label": label,
+            "description": description,
+            "basis": "ACRS",
+        }
+
+    value = float(scores["AIFS"])
+    if value >= 85:
+        label = "good"
+        description = "AI-friendly"
+    elif value >= 60:
+        label = "so-so"
+        description = "workable, but friction remains"
+    else:
+        label = "bad"
+        description = "not yet AI-friendly"
+    return {
+        "label": label,
+        "description": description,
+        "basis": "AIFS",
+    }
+
+
 def format_scored_value(value: float | None, maximum: int) -> str:
     if value is None:
         return "incomplete"
@@ -203,12 +238,17 @@ def format_optional_float(value: float | None) -> str:
 
 
 def print_report(scores: Dict[str, Any]) -> None:
+    band = ai_friendliness_band(scores)
     print(f"Label: {scores['label']}")
     print(f"Evaluation mode: {scores['evaluation_mode']}")
     print(f"ACRS: {format_scored_value(scores['ACRS'], 40)}")
     print(f"ATPS: {format_scored_value(scores['ATPS'], 60)}")
     print(f"AIFS: {format_scored_value(scores['AIFS'], 100)}")
     print(f"Rating: {rating(scores['AIFS'])}")
+    print(
+        "AI-friendliness summary: "
+        f"{band['label']} ({band['description']}, based on {band['basis']})"
+    )
     print("\nReadiness breakdown:")
     for k, v in scores["readiness_breakdown"].items():
         print(f"  - {k}: {v}")
@@ -273,6 +313,7 @@ def compare_scores(a: Dict[str, Any], b: Dict[str, Any]) -> None:
 
 
 def build_markdown_report(first: Dict[str, Any], second: Dict[str, Any] | None = None) -> str:
+    first_band = ai_friendliness_band(first)
     lines = [
         "# SCORE REPORT",
         "",
@@ -283,6 +324,8 @@ def build_markdown_report(first: Dict[str, Any], second: Dict[str, Any] | None =
         f"- ATPS: {format_scored_value(first['ATPS'], 60)}",
         f"- AIFS: {format_scored_value(first['AIFS'], 100)}",
         f"- Rating: {rating(first['AIFS'])}",
+        "- AI-friendliness summary: "
+        f"{first_band['label']} ({first_band['description']}, based on {first_band['basis']})",
         "",
         "### Readiness breakdown",
         "",
@@ -301,6 +344,7 @@ def build_markdown_report(first: Dict[str, Any], second: Dict[str, Any] | None =
     if second is None:
         return "\n".join(lines) + "\n"
 
+    second_band = ai_friendliness_band(second)
     lines.extend(
         [
             "",
@@ -311,6 +355,8 @@ def build_markdown_report(first: Dict[str, Any], second: Dict[str, Any] | None =
             f"- ATPS: {format_scored_value(second['ATPS'], 60)}",
             f"- AIFS: {format_scored_value(second['AIFS'], 100)}",
             f"- Rating: {rating(second['AIFS'])}",
+            "- AI-friendliness summary: "
+            f"{second_band['label']} ({second_band['description']}, based on {second_band['basis']})",
             "",
             "### Readiness breakdown",
             "",
