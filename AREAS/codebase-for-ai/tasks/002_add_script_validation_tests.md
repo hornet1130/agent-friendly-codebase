@@ -18,13 +18,13 @@ Add deterministic tests that cover the score calculator and scaffold CLIs so qua
 
 - `tests/test_cli_scripts.py`
 - `README.md`
-- `scripts/calculate_score.py`
+- `skills/codebase-for-ai/scripts/calculate_score.py`
 
 ## Validation
 
 - Target command: `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -v`
 - Success oracle: the test suite passes from a clean checkout and exercises audit-only output plus scaffold generation
-- Regression check: `PYTHONDONTWRITEBYTECODE=1 python3 -m py_compile scripts/*.py tests/*.py`
+- Regression check: `PYTHONDONTWRITEBYTECODE=1 python3 -m py_compile skills/codebase-for-ai/scripts/*.py tests/*.py`
 - Preferred grader: code-based
 - Evidence to capture: passing unittest output and generated fixture assertions
 

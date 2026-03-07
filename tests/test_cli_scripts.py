@@ -8,6 +8,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+SKILL_ROOT = REPO_ROOT / "skills" / "codebase-for-ai"
 
 
 def run_command(*args: str, cwd: Path) -> subprocess.CompletedProcess[str]:
@@ -23,16 +24,18 @@ def run_command(*args: str, cwd: Path) -> subprocess.CompletedProcess[str]:
     )
 
 
-def copy_cli_fixture(tmpdir: str) -> Path:
+def copy_skill_fixture(tmpdir: str) -> tuple[Path, Path]:
     fixture_root = Path(tmpdir) / "fixture"
-    fixture_root.mkdir()
-    for name in ("scripts", "TEMPLATES"):
-        shutil.copytree(
-            REPO_ROOT / name,
-            fixture_root / name,
-            ignore=shutil.ignore_patterns("__pycache__"),
-        )
-    return fixture_root
+    skill_fixture = fixture_root / "skills" / "codebase-for-ai"
+    target_root = fixture_root / "target-repo"
+    skill_fixture.parent.mkdir(parents=True)
+    shutil.copytree(
+        SKILL_ROOT,
+        skill_fixture,
+        ignore=shutil.ignore_patterns("__pycache__"),
+    )
+    target_root.mkdir(parents=True)
+    return skill_fixture, target_root
 
 
 class ScriptCliTests(unittest.TestCase):
@@ -40,7 +43,7 @@ class ScriptCliTests(unittest.TestCase):
         metrics_path = REPO_ROOT / "assets" / "example_audit_only_metrics.json"
         result = run_command(
             "python3",
-            "scripts/calculate_score.py",
+            str(SKILL_ROOT / "scripts" / "calculate_score.py"),
             str(metrics_path),
             cwd=REPO_ROOT,
         )
@@ -56,7 +59,7 @@ class ScriptCliTests(unittest.TestCase):
             output_path = Path(tmpdir) / "audit.md"
             result = run_command(
                 "python3",
-                "scripts/calculate_score.py",
+                str(SKILL_ROOT / "scripts" / "calculate_score.py"),
                 str(metrics_path),
                 "--md-out",
                 str(output_path),
@@ -71,23 +74,23 @@ class ScriptCliTests(unittest.TestCase):
 
     def test_init_area_scaffolds_audit_only_metrics(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            fixture_root = copy_cli_fixture(tmpdir)
+            skill_fixture, target_root = copy_skill_fixture(tmpdir)
             result = run_command(
                 "python3",
-                "scripts/init_area.py",
+                str(skill_fixture / "scripts" / "init_area.py"),
                 "--area-id",
                 "smoke-area",
                 "--human-name",
                 "Smoke Area",
                 "--primary-path",
                 "apps/api/src/modules/auth",
-                cwd=fixture_root,
+                cwd=target_root,
             )
 
             self.assertEqual(result.returncode, 0, result.stderr)
             baseline_metrics = json.loads(
                 (
-                    fixture_root
+                    target_root
                     / "AREAS"
                     / "smoke-area"
                     / "metrics"
@@ -98,7 +101,7 @@ class ScriptCliTests(unittest.TestCase):
             self.assertIsNone(baseline_metrics["dynamic"])
             self.assertTrue(
                 (
-                    fixture_root
+                    target_root
                     / "AREAS"
                     / "smoke-area"
                     / "reports"
@@ -108,10 +111,10 @@ class ScriptCliTests(unittest.TestCase):
 
     def test_init_task_creates_numbered_task_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            fixture_root = copy_cli_fixture(tmpdir)
+            skill_fixture, target_root = copy_skill_fixture(tmpdir)
             result = run_command(
                 "python3",
-                "scripts/init_task.py",
+                str(skill_fixture / "scripts" / "init_task.py"),
                 "--area-id",
                 "smoke-area",
                 "--task-id",
@@ -124,12 +127,12 @@ class ScriptCliTests(unittest.TestCase):
                 "low",
                 "--problem-statement",
                 "Verify the scripted scaffolding flow.",
-                cwd=fixture_root,
+                cwd=target_root,
             )
 
             self.assertEqual(result.returncode, 0, result.stderr)
             task_path = (
-                fixture_root / "AREAS" / "smoke-area" / "tasks" / "007_audit.md"
+                target_root / "AREAS" / "smoke-area" / "tasks" / "007_audit.md"
             )
             self.assertTrue(task_path.exists())
             content = task_path.read_text(encoding="utf-8")

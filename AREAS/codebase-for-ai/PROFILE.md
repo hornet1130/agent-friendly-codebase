@@ -4,7 +4,7 @@
 
 - Area ID: codebase-for-ai
 - Human name: codebase-for-ai skill package
-- Primary paths: `SKILL.md`, `RULE.md`, `EVALUATION.md`, `scripts/`, `TEMPLATES/`, `AREAS/example-auth-api/`
+- Primary paths: `skills/codebase-for-ai/SKILL.md`, `skills/codebase-for-ai/references/`, `skills/codebase-for-ai/scripts/`, `skills/codebase-for-ai/assets/TEMPLATES/`, `AREAS/example-auth-api/`
 - Non-goals / out of scope: downstream target repositories that copy this package, unrelated agent skills outside this repository
 
 ## 2. Why this area matters
@@ -15,22 +15,22 @@
 
 ## 3. Entrypoints
 
-- User entrypoints: `SKILL.md`
+- User entrypoints: `skills/codebase-for-ai/SKILL.md`
 - HTTP/API entrypoints: none
 - Job/queue entrypoints: none
 - UI route/page entrypoints: none
-- CLI/script entrypoints: `scripts/calculate_score.py`, `scripts/init_area.py`, `scripts/init_task.py`
+- CLI/script entrypoints: `skills/codebase-for-ai/scripts/calculate_score.py`, `skills/codebase-for-ai/scripts/init_area.py`, `skills/codebase-for-ai/scripts/init_task.py`
 
 ## 4. Dependency map
 
-- Primary dependencies: Python 3 standard library, filesystem writes under `AREAS/`, the metrics schema defined in `EVALUATION.md`
+- Primary dependencies: Python 3 standard library, filesystem writes under `AREAS/`, the metrics schema defined in `skills/codebase-for-ai/references/EVALUATION.md`
 - Reverse dependencies: agent sessions that invoke the skill, repositories that copy this package, the bundled example area and reports
 - Shared packages / infrastructure touched: none beyond local filesystem and shell execution
 
 ## 5. Key contracts
 
-- Public API / route: the score calculator CLI inputs and outputs, the area scaffold layout, and the output contract in `SKILL.md`
-- DTO / schema / zod / class-validator: metrics JSON schema in `EVALUATION.md`, evaluation report template, task template, and area profile template
+- Public API / route: the score calculator CLI inputs and outputs, the area scaffold layout, and the output contract in `skills/codebase-for-ai/SKILL.md`
+- DTO / schema / zod / class-validator: metrics JSON schema in `skills/codebase-for-ai/references/EVALUATION.md`, evaluation report template, task template, and area profile template
 - Shared package contracts: `AREAS/<area>/PROFILE.md`, `AREAS/<area>/tasks/*.md`, `AREAS/<area>/reports/*.md`, `AREAS/<area>/metrics/*.json`
 - External services: none required
 - Required env vars: none; Python 3 is the only runtime dependency
@@ -38,12 +38,12 @@
 ## 6. Canonical commands
 
 - install: `python3 --version`
-- build: `PYTHONDONTWRITEBYTECODE=1 python3 -m py_compile scripts/*.py tests/*.py`
-- lint: `PYTHONDONTWRITEBYTECODE=1 python3 -m py_compile scripts/*.py tests/*.py`
+- build: `PYTHONDONTWRITEBYTECODE=1 python3 -m py_compile skills/codebase-for-ai/scripts/*.py tests/*.py`
+- lint: `PYTHONDONTWRITEBYTECODE=1 python3 -m py_compile skills/codebase-for-ai/scripts/*.py tests/*.py`
 - test: `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -v`
 - test (area-only): `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -v`
-- dev: `python3 scripts/calculate_score.py assets/example_audit_only_metrics.json`
-- e2e: `python3 scripts/calculate_score.py AREAS/example-auth-api/metrics/baseline.json AREAS/example-auth-api/metrics/transformed.json`
+- dev: `python3 skills/codebase-for-ai/scripts/calculate_score.py assets/example_audit_only_metrics.json`
+- e2e: `python3 skills/codebase-for-ai/scripts/calculate_score.py AREAS/example-auth-api/metrics/baseline.json AREAS/example-auth-api/metrics/transformed.json`
 
 ## 7. Typical change types
 
@@ -55,20 +55,20 @@
 
 ## 8. Common files touched
 
-- Hot files: `SKILL.md`, `EVALUATION.md`, `README.md`, `scripts/calculate_score.py`, `scripts/init_area.py`
-- Supporting files: `TEMPLATES/*`, `AREAS/example-auth-api/*`, `tests/test_cli_scripts.py`
-- Dangerous shared files: `RULE.md`, `EVALUATION.md`, and templates consumed by every generated area
+- Hot files: `skills/codebase-for-ai/SKILL.md`, `skills/codebase-for-ai/references/EVALUATION.md`, `README.md`, `skills/codebase-for-ai/scripts/calculate_score.py`, `skills/codebase-for-ai/scripts/init_area.py`
+- Supporting files: `skills/codebase-for-ai/assets/TEMPLATES/*`, `AREAS/example-auth-api/*`, `tests/test_cli_scripts.py`
+- Dangerous shared files: `skills/codebase-for-ai/references/RULE.md`, `skills/codebase-for-ai/references/EVALUATION.md`, and templates consumed by every generated area
 
 ## 9. Exploration hints
 
-- Fastest starting files: `SKILL.md`, `EVALUATION.md`, `README.md`, `tests/test_cli_scripts.py`
+- Fastest starting files: `skills/codebase-for-ai/SKILL.md`, `skills/codebase-for-ai/references/EVALUATION.md`, `README.md`, `tests/test_cli_scripts.py`
 - High-signal symbols / grep seeds: `evaluation_mode`, `missing_measurements`, `AIFS`, `ACRS`, `ATPS`, `metrics_stub`
-- Directory focus order: `scripts/` -> `tests/` -> `TEMPLATES/` -> `AREAS/example-auth-api/`
+- Directory focus order: `skills/codebase-for-ai/scripts/` -> `tests/` -> `skills/codebase-for-ai/assets/TEMPLATES/` -> `AREAS/example-auth-api/`
 
 ## 10. Verification
 
 - Fastest proof command: `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -v`
-- Full proof command: `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -v`
+- Full proof command: `python3 skills/codebase-for-ai/scripts/calculate_score.py AREAS/codebase-for-ai/metrics/baseline.json AREAS/codebase-for-ai/metrics/transformed.json`
 - Known flaky tests: none documented
 - Manual checks still required: read generated markdown reports to confirm the narrative matches the numeric score output
 

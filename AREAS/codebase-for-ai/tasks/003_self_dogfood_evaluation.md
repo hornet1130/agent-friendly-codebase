@@ -22,7 +22,7 @@ Evaluate this repository with its own method and persist the area profile, repre
 
 ## Validation
 
-- Target command: `python3 scripts/calculate_score.py AREAS/codebase-for-ai/metrics/baseline.json AREAS/codebase-for-ai/metrics/transformed.json`
+- Target command: `python3 skills/codebase-for-ai/scripts/calculate_score.py AREAS/codebase-for-ai/metrics/baseline.json AREAS/codebase-for-ai/metrics/transformed.json`
 - Success oracle: the self-evaluation area can be scored and its comparison output matches the persisted reports
 - Regression check: `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -v`
 - Preferred grader: code-based

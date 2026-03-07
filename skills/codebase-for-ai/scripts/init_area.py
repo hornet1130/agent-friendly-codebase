@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
-"""Initialize a work-area scaffold inside AREAS/.
+"""Initialize a work-area scaffold inside a target repository's AREAS/.
 
 Usage:
-  python scripts/init_area.py --area-id auth-api \
+  python init_area.py --area-id auth-api \
     --human-name "Authentication API module" \
     --primary-path apps/api/src/modules/auth
-  python scripts/init_area.py --area-id auth-api \
+  python init_area.py --area-id auth-api \
     --human-name "Authentication API module" \
     --primary-path apps/api/src/modules/auth \
     --profile-template AREA_PROFILE.node-monorepo.md
+  python init_area.py --area-id auth-api \
+    --human-name "Authentication API module" \
+    --primary-path apps/api/src/modules/auth \
+    --repo-root /path/to/target-repo
 """
 
 from __future__ import annotations
@@ -18,8 +22,14 @@ import json
 from pathlib import Path
 
 
-def repo_root() -> Path:
+def skill_root() -> Path:
     return Path(__file__).resolve().parents[1]
+
+
+def target_repo_root(repo_root_arg: str | None) -> Path:
+    if repo_root_arg:
+        return Path(repo_root_arg).resolve()
+    return Path.cwd()
 
 
 def read_text(path: Path) -> str:
@@ -90,26 +100,31 @@ def main() -> int:
     parser.add_argument(
         "--profile-template",
         default="AREA_PROFILE.md",
-        help="Template file name under TEMPLATES/ or an absolute/relative file path",
+        help="Template file name under assets/TEMPLATES/ or an absolute/relative file path",
+    )
+    parser.add_argument(
+        "--repo-root",
+        help="Target repository root where AREAS/<area>/ should be written. Defaults to the current working directory.",
     )
     parser.add_argument("--overwrite", action="store_true")
     args = parser.parse_args()
 
-    root = repo_root()
-    area_dir = root / "AREAS" / args.area_id
+    skill_dir = skill_root()
+    output_root = target_repo_root(args.repo_root)
+    area_dir = output_root / "AREAS" / args.area_id
     tasks_dir = area_dir / "tasks"
     reports_dir = area_dir / "reports"
     metrics_dir = area_dir / "metrics"
 
     template_path = Path(args.profile_template)
     if not template_path.is_absolute():
-        candidate = root / "TEMPLATES" / args.profile_template
-        template_path = candidate if candidate.exists() else root / args.profile_template
+        candidate = skill_dir / "assets" / "TEMPLATES" / args.profile_template
+        template_path = candidate if candidate.exists() else Path(args.profile_template).resolve()
     if not template_path.exists():
         raise SystemExit(f"Profile template not found: {args.profile_template}")
 
     profile_template = read_text(template_path)
-    report_template = read_text(root / "TEMPLATES" / "EVALUATION_REPORT.md")
+    report_template = read_text(skill_dir / "assets" / "TEMPLATES" / "EVALUATION_REPORT.md")
 
     write_text(
         area_dir / "PROFILE.md",
@@ -137,7 +152,7 @@ def main() -> int:
         "# COMPARISON REPORT\n\n"
         "Generate this file after both metrics files are measured.\n\n"
         "Suggested command:\n\n"
-        f"`python scripts/calculate_score.py AREAS/{args.area_id}/metrics/baseline.json "
+        f"`python /path/to/codebase-for-ai/scripts/calculate_score.py AREAS/{args.area_id}/metrics/baseline.json "
         f"AREAS/{args.area_id}/metrics/transformed.json --md-out AREAS/{args.area_id}/reports/comparison.md`\n",
         overwrite=args.overwrite,
     )

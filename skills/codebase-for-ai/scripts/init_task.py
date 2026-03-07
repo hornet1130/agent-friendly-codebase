@@ -2,8 +2,11 @@
 """Create a task file from the task template.
 
 Usage:
-  python scripts/init_task.py --area-id auth-api --task-id auth-api-001 \
+  python init_task.py --area-id auth-api --task-id auth-api-001 \
     --slug bug_login_refresh --type bug-fix --difficulty medium
+  python init_task.py --area-id auth-api --task-id auth-api-001 \
+    --slug bug_login_refresh --type bug-fix --difficulty medium \
+    --repo-root /path/to/target-repo
 """
 
 from __future__ import annotations
@@ -13,8 +16,14 @@ import re
 from pathlib import Path
 
 
-def repo_root() -> Path:
+def skill_root() -> Path:
     return Path(__file__).resolve().parents[1]
+
+
+def target_repo_root(repo_root_arg: str | None) -> Path:
+    if repo_root_arg:
+        return Path(repo_root_arg).resolve()
+    return Path.cwd()
 
 
 def derive_filename(task_id: str, slug: str) -> str:
@@ -31,12 +40,17 @@ def main() -> int:
     parser.add_argument("--type", dest="task_type", default="bug-fix")
     parser.add_argument("--difficulty", default="medium")
     parser.add_argument("--problem-statement", default="")
+    parser.add_argument(
+        "--repo-root",
+        help="Target repository root where AREAS/<area>/ should be written. Defaults to the current working directory.",
+    )
     parser.add_argument("--overwrite", action="store_true")
     args = parser.parse_args()
 
-    root = repo_root()
-    template_path = root / "TEMPLATES" / "TASK.md"
-    output_path = root / "AREAS" / args.area_id / "tasks" / derive_filename(
+    skill_dir = skill_root()
+    output_root = target_repo_root(args.repo_root)
+    template_path = skill_dir / "assets" / "TEMPLATES" / "TASK.md"
+    output_path = output_root / "AREAS" / args.area_id / "tasks" / derive_filename(
         args.task_id, args.slug
     )
 

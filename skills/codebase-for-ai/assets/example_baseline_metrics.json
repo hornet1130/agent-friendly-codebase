@@ -1,0 +1,22 @@
+{
+  "label": "auth-api-baseline",
+  "readiness": {
+    "boundary_entrypoints": 5,
+    "commands_env": 4,
+    "contracts": 6,
+    "context_hierarchy": 3,
+    "examples_persistence": 4
+  },
+  "dynamic": {
+    "resolve_rate": 0.45,
+    "valid_patch_rate": 0.65,
+    "regression_free_rate": 0.55,
+    "context_precision": 0.42,
+    "context_recall": 0.71,
+    "first_relevant_hit_rate": 0.58,
+    "human_intervention_free_rate": 0.35,
+    "review_acceptance_rate": 0.40,
+    "sequence_gain": 0.10,
+    "cost_reduction_rate": 0.08
+  }
+}

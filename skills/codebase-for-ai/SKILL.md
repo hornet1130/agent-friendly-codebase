@@ -13,7 +13,7 @@ Use this skill to do one of four things for a **bounded work area** inside a rep
 3. **Evaluate** the work area quantitatively.
 4. **Compare** baseline and transformed states.
 
-This skill is intentionally thin. It should orchestrate work by reading `RULE.md`, `EVALUATION.md`, templates, and any area-specific profile files. Do not duplicate long rules here.
+This skill is intentionally thin. It should orchestrate work by reading `references/RULE.md`, `references/EVALUATION.md`, the relevant checklist under `references/CHECKLISTS/`, the templates under `assets/TEMPLATES/`, and any area-specific profile files in the target repository. Do not duplicate long rules here.
 
 If the repository stack is clear, read the smallest relevant stack overlay:
 
@@ -47,9 +47,9 @@ Try to infer these from the prompt or repository. Ask only when necessary.
 
 # Always read in this order
 
-1. `RULE.md`
-2. `EVALUATION.md`
-3. `CHECKLISTS/WORK.md`, `CHECKLISTS/SAFE_TRANSFORM.md`, or `CHECKLISTS/EVALUATION.md` as applicable
+1. `references/RULE.md`
+2. `references/EVALUATION.md`
+3. `references/CHECKLISTS/WORK.md`, `references/CHECKLISTS/SAFE_TRANSFORM.md`, or `references/CHECKLISTS/EVALUATION.md` as applicable
 4. `AREAS/<area>/PROFILE.md` if present
 5. existing task files and previous reports for the same area
 
@@ -71,7 +71,7 @@ Produce:
 
 Produce:
 
-- baseline gap table against `RULE.md`
+- baseline gap table against `references/RULE.md`
 - minimal set of changes needed to satisfy the rules
 - artifact plan: docs, scripts, examples, tests, scoped instructions
 - changed or proposed file list
@@ -129,12 +129,22 @@ If the user asks for persisted outputs, write them under:
 1. Bound the work area.
 2. Map entrypoints, contracts, commands, and tests.
 3. Capture the trusted baseline proof commands.
-4. Score the baseline using `EVALUATION.md`.
+4. Score the baseline using `references/EVALUATION.md`.
 5. Identify the smallest set of artifacts or codebase changes that improve the score.
 6. Apply or propose those changes.
 7. Re-run area-scoped proof first, then broader regression checks.
 8. Re-run the same evaluation logic.
 9. Compare baseline vs transformed using the same task set and same conditions.
+
+# Installed helper scripts
+
+This skill bundles deterministic helper scripts under `scripts/`.
+
+- `scripts/init_area.py`
+- `scripts/init_task.py`
+- `scripts/calculate_score.py`
+
+When invoked from an installed skill, `init_area.py` and `init_task.py` should write into the current working directory by default, or into an explicit `--repo-root`. Do not assume the skill files live inside the target repository.
 
 # Evaluation workflow
 

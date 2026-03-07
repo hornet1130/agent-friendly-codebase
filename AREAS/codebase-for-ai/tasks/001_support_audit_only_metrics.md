@@ -16,15 +16,15 @@ Audit-only evaluations should report `ATPS` and `AIFS` as incomplete instead of 
 
 ## Expected relevant files
 
-- `scripts/calculate_score.py`
-- `scripts/init_area.py`
-- `EVALUATION.md`
+- `skills/codebase-for-ai/scripts/calculate_score.py`
+- `skills/codebase-for-ai/scripts/init_area.py`
+- `skills/codebase-for-ai/references/EVALUATION.md`
 
 ## Validation
 
 - Target command: `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -v`
 - Success oracle: audit-only fixtures print and render `ATPS` and `AIFS` as incomplete while full fixtures still score normally
-- Regression check: `PYTHONDONTWRITEBYTECODE=1 python3 -m py_compile scripts/*.py tests/*.py`
+- Regression check: `PYTHONDONTWRITEBYTECODE=1 python3 -m py_compile skills/codebase-for-ai/scripts/*.py tests/*.py`
 - Preferred grader: code-based
 - Evidence to capture: unittest output, example score output, changed fixtures and templates
 
