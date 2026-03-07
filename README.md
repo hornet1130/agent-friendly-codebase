@@ -1,6 +1,6 @@
-# CODEBASE_FOR_AI
+# codebase-for-ai
 
-`CODEBASE_FOR_AI` is a reusable skill package for turning a bounded part of a repository into an AI-friendly work area, then measuring whether the transformation improved real task execution.
+`codebase-for-ai` is a reusable skill package for turning a bounded part of a repository into an AI-friendly work area, then measuring whether the transformation improved real task execution.
 
 This package is intentionally split by responsibility:
 
@@ -34,17 +34,44 @@ Place the package where your agent can discover it.
 
 For Claude Code:
 
-- `.claude/skills/CODEBASE_FOR_AI/`
-- `apps/web/.claude/skills/CODEBASE_FOR_AI/`
-- `apps/api/.claude/skills/CODEBASE_FOR_AI/`
+- `.claude/skills/codebase-for-ai/`
+- `apps/web/.claude/skills/codebase-for-ai/`
+- `apps/api/.claude/skills/codebase-for-ai/`
 
 For Codex-family agents:
 
-- `.agents/skills/CODEBASE_FOR_AI/`
-- `apps/web/.agents/skills/CODEBASE_FOR_AI/`
-- `apps/api/.agents/skills/CODEBASE_FOR_AI/`
+- `.agents/skills/codebase-for-ai/`
+- `apps/web/.agents/skills/codebase-for-ai/`
+- `apps/api/.agents/skills/codebase-for-ai/`
 
 In a monorepo, the most practical setup is a root-level shared skill plus area-local supporting material near the code being transformed.
+
+## Stack fit
+
+The core method is framework-agnostic. It works anywhere you can define a bounded work area, name its contracts, and run reproducible validation.
+
+Current examples lean toward JavaScript or TypeScript monorepos:
+
+- `apps/web/...`
+- `apps/api/...`
+- `pnpm` and `turbo` command examples
+- an auth-module example that looks like a typical Next.js or NestJS-adjacent setup
+
+That does **not** make the package Node-only. The main abstractions are generic:
+
+- work area boundary
+- entrypoints
+- contracts
+- commands
+- verification
+- representative tasks
+- baseline vs transformed comparison
+
+To use it on Go, Python, Java, Rust, or mixed-language repos, the main adaptation points are just the area profile and task set:
+
+- replace commands with the stack-specific build and test commands
+- describe the stack-specific contract surface
+- point the examples and failure patterns at the relevant subsystem
 
 ## How to use it in another codebase
 
@@ -122,19 +149,19 @@ Use prompts like these after copying the skill into the target repository.
 
 Transformation prompt:
 
-> Use `CODEBASE_FOR_AI` to define `apps/api/src/modules/auth` as a work area, score its baseline, apply the smallest changes that improve AI-friendliness, and summarize the changes as a rule-mapping table.
+> Use `codebase-for-ai` to define `apps/api/src/modules/auth` as a work area, score its baseline, apply the smallest changes that improve AI-friendliness, and summarize the changes as a rule-mapping table.
 
 Evaluation prompt:
 
-> Use `CODEBASE_FOR_AI` to evaluate `apps/web/src/features/checkout`. Compute the baseline score and task performance, and compare it with the most recent transformed report if it exists.
+> Use `codebase-for-ai` to evaluate `apps/web/src/features/checkout`. Compute the baseline score and task performance, and compare it with the most recent transformed report if it exists.
 
 Comparison prompt:
 
-> Use `CODEBASE_FOR_AI` to compare baseline vs transformed results for `orders-api`. Report total score, resolve rate, regression-free rate, context efficiency, and human dependence.
+> Use `codebase-for-ai` to compare baseline vs transformed results for `orders-api`. Report total score, resolve rate, regression-free rate, context efficiency, and human dependence.
 
 End-to-end pipeline prompt:
 
-> Use `CODEBASE_FOR_AI` to run the full pipeline for `apps/api/src/modules/auth`: define the work area, write baseline artifacts under `AREAS/auth-api/`, evaluate baseline, apply the smallest safe transformation, evaluate the transformed state, and write the comparison report under `AREAS/auth-api/reports/comparison.md`.
+> Use `codebase-for-ai` to run the full pipeline for `apps/api/src/modules/auth`: define the work area, write baseline artifacts under `AREAS/auth-api/`, evaluate baseline, apply the smallest safe transformation, evaluate the transformed state, and write the comparison report under `AREAS/auth-api/reports/comparison.md`.
 
 ## What "AI-friendly" means here
 

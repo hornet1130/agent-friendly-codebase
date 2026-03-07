@@ -1,5 +1,5 @@
 ---
-name: CODEBASE_FOR_AI
+name: codebase-for-ai
 description: Transform and quantitatively evaluate a bounded repository work area for AI-agent friendliness. Use when the task is to define a work area, audit it against AI-friendly codebase rules, create or improve area-specific context and workflow artifacts, or compare baseline vs transformed performance on the same task set. Do not use for unrelated feature work outside codebase-for-AI transformation or for vague repository-wide refactors without a scoped target area.
 disable-model-invocation: true
 ---
