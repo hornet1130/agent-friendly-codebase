@@ -17,7 +17,15 @@ skills/
     agents/openai.yaml
     references/
     assets/TEMPLATES/
+    scripts/smoke_test.sh
     scripts/calculate_score.py
+```
+
+## Verify
+
+```bash
+python3 -m py_compile skills/codebase-for-ai/scripts/calculate_score.py
+sh skills/codebase-for-ai/scripts/smoke_test.sh
 ```
 
 Only deployable skill files are tracked in this repository.

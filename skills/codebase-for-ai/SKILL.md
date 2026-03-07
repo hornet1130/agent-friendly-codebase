@@ -23,6 +23,8 @@ If the repository stack is clear, read the smallest relevant stack overlay:
 
 Do not read all overlays by default. Pick only the one that matches the target area.
 
+Read `references/MAINTENANCE.md` only when you need packaging, smoke-test, or score-script maintenance guidance for this skill itself.
+
 # Core definitions
 
 A **work area** is not just a folder. It is a bounded unit of work defined by:
@@ -136,13 +138,16 @@ If the user asks for persisted outputs, write them under:
 8. Re-run the same evaluation logic.
 9. Compare baseline vs transformed using the same task set and same conditions.
 
-# Optional helper script
+# Optional helper scripts
 
-This skill bundles one deterministic helper script under `scripts/`.
+This skill bundles deterministic helpers under `scripts/`.
 
+- `scripts/smoke_test.sh`
 - `scripts/calculate_score.py`
 
-Use it only when the user wants machine-generated score output files or deterministic score formatting. Do not assume file output is required for a normal evaluation.
+Use `scripts/smoke_test.sh` when validating the packaged skill before publishing or after modifying its bundled files.
+
+Use `scripts/calculate_score.py` only when the user wants machine-generated score output files or deterministic score formatting. Do not assume file output is required for a normal evaluation.
 
 # Evaluation workflow
 
@@ -172,6 +177,12 @@ Recommended structure:
 - `AREAS/<area>/reports/*.md`
 - `AREAS/<area>/metrics/*.json`
 - optional area-local docs/examples/tests/scripts
+
+When maintaining this skill itself:
+
+- keep packaging and verification notes in `references/MAINTENANCE.md`
+- keep scoring-model changes in `references/EVALUATION.md`
+- keep workflow changes in `SKILL.md`
 
 # Report style
 
