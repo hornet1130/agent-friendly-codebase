@@ -5,7 +5,7 @@
 ## Install
 
 ```bash
-npx skills add https://github.com/<owner>/<repo> --skill codebase-for-ai
+npx skills add https://github.com/hornet1130/codebase-for-ai
 ```
 
 ## When to Use
