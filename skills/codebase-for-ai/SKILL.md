@@ -25,6 +25,8 @@ Do not read all overlays by default. Pick only the one that matches the target a
 
 Read `references/MAINTENANCE.md` only when you need packaging, smoke-test, or score-script maintenance guidance for this skill itself.
 
+Read `references/SELF_EVAL.md` only when you are evaluating or maintaining the `codebase-for-ai` skill package itself and need the fixed self-task set.
+
 # Core definitions
 
 A **work area** is not just a folder. It is a bounded unit of work defined by:
@@ -143,9 +145,12 @@ If the user asks for persisted outputs, write them under:
 This skill bundles deterministic helpers under `scripts/`.
 
 - `scripts/smoke_test.sh`
+- `scripts/self_eval_check.sh`
 - `scripts/calculate_score.py`
 
 Use `scripts/smoke_test.sh` when validating the packaged skill before publishing or after modifying its bundled files.
+
+Use `scripts/self_eval_check.sh` when validating that the packaged self-evaluation task set and its supporting files are still intact.
 
 Use `scripts/calculate_score.py` only when the user wants machine-generated score output files or deterministic score formatting. Do not assume file output is required for a normal evaluation.
 
@@ -181,6 +186,7 @@ Recommended structure:
 When maintaining this skill itself:
 
 - keep packaging and verification notes in `references/MAINTENANCE.md`
+- keep the fixed self-task set in `references/SELF_EVAL.md`
 - keep scoring-model changes in `references/EVALUATION.md`
 - keep workflow changes in `SKILL.md`
 

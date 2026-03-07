@@ -2,6 +2,15 @@
 
 Read this file only when you are validating, publishing, or debugging the `codebase-for-ai` skill package itself.
 
+## Skill-package boundary
+
+Treat `skills/codebase-for-ai/` as the bounded work area when maintaining this skill itself.
+
+- primary paths: `SKILL.md`, `references/`, `scripts/`, `agents/openai.yaml`
+- entrypoints: `SKILL.md`, `scripts/smoke_test.sh`, `scripts/self_eval_check.sh`
+- important dependencies: `README.md`, Python 3, POSIX shell, grep-based validation commands
+- reverse dependencies: the root install command, packaged skill loading via `--skill codebase-for-ai`, and any automation that relies on `scripts/calculate_score.py`
+
 ## Canonical smoke test
 
 Run these commands from the repository root:
@@ -17,6 +26,22 @@ Expected result:
 - the smoke test prints an `audit-only` report
 - the report contains `ACRS: 28/40`
 - `ATPS` and `AIFS` are both `incomplete`
+
+## Full package validation
+
+Run these commands from the repository root:
+
+```bash
+python3 -m py_compile skills/codebase-for-ai/scripts/calculate_score.py
+sh skills/codebase-for-ai/scripts/smoke_test.sh
+sh skills/codebase-for-ai/scripts/self_eval_check.sh
+```
+
+Expected result:
+
+- the smoke test passes
+- the self-eval check reports `8` task specs
+- `README.md`, `SKILL.md`, `SELF_EVAL.md`, and `agents/openai.yaml` stay aligned
 
 ## Worked example
 
@@ -52,6 +77,10 @@ This is the canonical example for verifying that packaging and audit-only scorin
   The metrics payload mixes audit-only and full-evaluation fields.
 - `full evaluation metrics require a 'dynamic' object`
   A full-evaluation payload is missing required dynamic measurements.
+- `expected 8 self-eval tasks, found N`
+  `references/SELF_EVAL.md` drifted or a task heading was renamed.
+- `self-eval check references missing file`
+  A packaged file moved without updating `scripts/self_eval_check.sh`.
 
 ## Knowledge persistence
 

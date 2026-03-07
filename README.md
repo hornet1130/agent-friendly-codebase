@@ -18,6 +18,7 @@ skills/
     references/
     assets/TEMPLATES/
     scripts/smoke_test.sh
+    scripts/self_eval_check.sh
     scripts/calculate_score.py
 ```
 
@@ -26,6 +27,7 @@ skills/
 ```bash
 python3 -m py_compile skills/codebase-for-ai/scripts/calculate_score.py
 sh skills/codebase-for-ai/scripts/smoke_test.sh
+sh skills/codebase-for-ai/scripts/self_eval_check.sh
 ```
 
 Only deployable skill files are tracked in this repository.
