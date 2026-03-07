@@ -4,6 +4,7 @@
 
 - Area ID:
 - State: baseline | transformed
+- Evaluation mode: audit-only | full
 - Date:
 - Agent/model:
 - Tool permissions:
@@ -31,6 +32,8 @@
 
 ## 4. Dynamic task scores
 
+For audit-only runs, write `incomplete` for each value and score in this section.
+
 | Metric | Value | Score |
 |---|---:|---:|
 | Resolve Rate | | |
@@ -46,8 +49,8 @@
 | Metric | Score |
 |---|---:|
 | ACRS | |
-| ATPS | |
-| **AIFS** | |
+| ATPS | incomplete if audit-only |
+| **AIFS** | incomplete if audit-only |
 
 ## 6. Evidence
 

@@ -208,6 +208,7 @@ Requirements for an audit-only result:
 
 - report `ACRS`
 - mark `ATPS` as incomplete or estimated
+- mark `AIFS` as incomplete because the dynamic layer is missing
 - state the missing measurements clearly
 
 Use `full evaluation` only when static and dynamic data are both available.
@@ -248,23 +249,30 @@ If publication-quality rigor matters, preserve per-task raw logs.
 
 The score script expects:
 
-- top-level keys: `label`, `readiness`, `dynamic`
+- required top-level keys: `label`, `readiness`
+- optional top-level keys: `evaluation_mode`, `dynamic`, `missing_measurements`
 - readiness keys:
   - `boundary_entrypoints`
   - `commands_env`
   - `contracts`
   - `context_hierarchy`
   - `examples_persistence`
-- dynamic keys:
-  - `resolve_rate`
-  - `valid_patch_rate`
-  - `regression_free_rate`
-  - `context_precision`
-  - `context_recall`
-  - `first_relevant_hit_rate`
-  - `human_intervention_free_rate`
-  - `review_acceptance_rate`
-  - `sequence_gain`
-  - `cost_reduction_rate`
+- for `full` evaluation files:
+  - omit `evaluation_mode` or set it to `full`
+  - provide `dynamic` with these keys:
+    - `resolve_rate`
+    - `valid_patch_rate`
+    - `regression_free_rate`
+    - `context_precision`
+    - `context_recall`
+    - `first_relevant_hit_rate`
+    - `human_intervention_free_rate`
+    - `review_acceptance_rate`
+    - `sequence_gain`
+    - `cost_reduction_rate`
+- for `audit-only` files:
+  - set `evaluation_mode` to `audit-only`
+  - omit `dynamic` or set it to `null`
+  - add `missing_measurements` with the missing dynamic evidence
 
-See `assets/example_baseline_metrics.json` and `assets/example_transformed_metrics.json` for concrete examples.
+See `assets/example_audit_only_metrics.json`, `assets/example_baseline_metrics.json`, and `assets/example_transformed_metrics.json` for concrete examples.

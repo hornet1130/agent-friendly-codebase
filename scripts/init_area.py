@@ -65,6 +65,7 @@ def initialize_report(template: str, area_id: str, state: str) -> str:
 def metrics_stub(label: str) -> dict:
     return {
         "label": label,
+        "evaluation_mode": "audit-only",
         "readiness": {
             "boundary_entrypoints": 0,
             "commands_env": 0,
@@ -72,18 +73,11 @@ def metrics_stub(label: str) -> dict:
             "context_hierarchy": 0,
             "examples_persistence": 0,
         },
-        "dynamic": {
-            "resolve_rate": 0,
-            "valid_patch_rate": 0,
-            "regression_free_rate": 0,
-            "context_precision": 0,
-            "context_recall": 0,
-            "first_relevant_hit_rate": 0,
-            "human_intervention_free_rate": 0,
-            "review_acceptance_rate": 0,
-            "sequence_gain": 0,
-            "cost_reduction_rate": 0,
-        },
+        "dynamic": None,
+        "missing_measurements": [
+            "Dynamic task runs have not been executed yet.",
+            "Set evaluation_mode to 'full' and add dynamic metrics after running the task set.",
+        ],
         "notes": "Replace placeholder values with measured data before using them as evidence.",
     }
 

@@ -6,6 +6,10 @@ Usage:
   python scripts/calculate_score.py baseline.json transformed.json
   python scripts/calculate_score.py metrics.json --md-out report.md
   python scripts/calculate_score.py baseline.json transformed.json --md-out comparison.md
+
+Audit-only files should set:
+  "evaluation_mode": "audit-only"
+  "dynamic": null
 """
 
 from __future__ import annotations
@@ -39,6 +43,13 @@ DYNAMIC_KEYS = [
 ]
 
 
+def get_evaluation_mode(data: Dict[str, Any], path: str) -> str:
+    mode = data.get("evaluation_mode", "full")
+    if mode not in {"full", "audit-only"}:
+        raise ValueError(f"{path}: evaluation_mode must be 'full' or 'audit-only'")
+    return mode
+
+
 def clamp(value: float, low: float = 0.0, high: float = 1.0) -> float:
     return max(low, min(high, value))
 
@@ -50,8 +61,10 @@ def load_json(path: str) -> Dict[str, Any]:
 
 
 def validate_metrics(data: Dict[str, Any], path: str) -> None:
-    if "readiness" not in data or "dynamic" not in data:
-        raise ValueError(f"{path}: expected top-level keys 'readiness' and 'dynamic'")
+    if "readiness" not in data:
+        raise ValueError(f"{path}: expected top-level key 'readiness'")
+
+    mode = get_evaluation_mode(data, path)
 
     for key in READINESS_KEYS:
         if key not in data["readiness"]:
@@ -60,10 +73,24 @@ def validate_metrics(data: Dict[str, Any], path: str) -> None:
         if not isinstance(value, (int, float)) or value < 0 or value > 8:
             raise ValueError(f"{path}: readiness '{key}' must be a number in [0, 8]")
 
+    dynamic = data.get("dynamic")
+    if mode == "audit-only":
+        if dynamic is not None:
+            raise ValueError(
+                f"{path}: audit-only metrics must omit 'dynamic' or set it to null"
+            )
+        missing_measurements = data.get("missing_measurements")
+        if missing_measurements is not None and not isinstance(missing_measurements, list):
+            raise ValueError(f"{path}: missing_measurements must be a list when present")
+        return
+
+    if not isinstance(dynamic, dict):
+        raise ValueError(f"{path}: full evaluation metrics require a 'dynamic' object")
+
     for key in DYNAMIC_KEYS:
-        if key not in data["dynamic"]:
+        if key not in dynamic:
             raise ValueError(f"{path}: missing dynamic key '{key}'")
-        value = data["dynamic"][key]
+        value = dynamic[key]
         if not isinstance(value, (int, float)):
             raise ValueError(f"{path}: dynamic '{key}' must be numeric")
         if key in {"sequence_gain", "cost_reduction_rate"}:
@@ -76,7 +103,7 @@ def validate_metrics(data: Dict[str, Any], path: str) -> None:
 
 def compute_scores(data: Dict[str, Any]) -> Dict[str, Any]:
     r = data["readiness"]
-    d = data["dynamic"]
+    mode = data.get("evaluation_mode", "full")
 
     s1 = r["boundary_entrypoints"]
     s2 = r["commands_env"]
@@ -84,6 +111,29 @@ def compute_scores(data: Dict[str, Any]) -> Dict[str, Any]:
     s4 = r["context_hierarchy"]
     s5 = r["examples_persistence"]
     acrs = s1 + s2 + s3 + s4 + s5
+
+    if mode == "audit-only":
+        return {
+            "label": data.get("label", "unknown"),
+            "evaluation_mode": mode,
+            "ACRS": round(acrs, 2),
+            "ATPS": None,
+            "AIFS": None,
+            "readiness_breakdown": {
+                "S1_boundary_entrypoints": round(s1, 2),
+                "S2_commands_env": round(s2, 2),
+                "S3_contracts": round(s3, 2),
+                "S4_context_hierarchy": round(s4, 2),
+                "S5_examples_persistence": round(s5, 2),
+            },
+            "dynamic_breakdown": None,
+            "missing_measurements": data.get(
+                "missing_measurements",
+                ["Dynamic task evaluation has not been executed yet."],
+            ),
+        }
+
+    d = data["dynamic"]
 
     d1 = 20 * clamp(d["resolve_rate"])
     d2 = 10 * clamp(d["valid_patch_rate"])
@@ -106,6 +156,7 @@ def compute_scores(data: Dict[str, Any]) -> Dict[str, Any]:
 
     return {
         "label": data.get("label", "unknown"),
+        "evaluation_mode": mode,
         "ACRS": round(acrs, 2),
         "ATPS": round(atps, 2),
         "AIFS": round(aifs, 2),
@@ -127,7 +178,9 @@ def compute_scores(data: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def rating(aifs: float) -> str:
+def rating(aifs: float | None) -> str:
+    if aifs is None:
+        return "incomplete"
     if aifs >= 85:
         return "agent-ready"
     if aifs >= 70:
@@ -137,33 +190,64 @@ def rating(aifs: float) -> str:
     return "human-dependent area"
 
 
+def format_scored_value(value: float | None, maximum: int) -> str:
+    if value is None:
+        return "incomplete"
+    return f"{value}/{maximum}"
+
+
+def format_optional_float(value: float | None) -> str:
+    if value is None:
+        return "incomplete"
+    return f"{value:.2f}"
+
+
 def print_report(scores: Dict[str, Any]) -> None:
     print(f"Label: {scores['label']}")
-    print(f"ACRS: {scores['ACRS']}/40")
-    print(f"ATPS: {scores['ATPS']}/60")
-    print(f"AIFS: {scores['AIFS']}/100")
+    print(f"Evaluation mode: {scores['evaluation_mode']}")
+    print(f"ACRS: {format_scored_value(scores['ACRS'], 40)}")
+    print(f"ATPS: {format_scored_value(scores['ATPS'], 60)}")
+    print(f"AIFS: {format_scored_value(scores['AIFS'], 100)}")
     print(f"Rating: {rating(scores['AIFS'])}")
     print("\nReadiness breakdown:")
     for k, v in scores["readiness_breakdown"].items():
         print(f"  - {k}: {v}")
+
+    if scores["dynamic_breakdown"] is None:
+        print("\nDynamic breakdown:")
+        print("  - incomplete (audit-only)")
+        for item in scores.get("missing_measurements", []):
+            print(f"  - missing: {item}")
+        return
+
     print("\nDynamic breakdown:")
     for k, v in scores["dynamic_breakdown"].items():
         print(f"  - {k}: {v}")
 
 
+def compare_metric(before: float | None, after: float | None) -> Dict[str, Any]:
+    if before is None or after is None:
+        return {
+            "before": before,
+            "after": after,
+            "delta": None,
+            "relative_pct": None,
+        }
+
+    delta = after - before
+    relative_pct = (delta / before * 100.0) if before != 0 else math.inf
+    return {
+        "before": round(before, 2),
+        "after": round(after, 2),
+        "delta": round(delta, 2),
+        "relative_pct": relative_pct if math.isinf(relative_pct) else round(relative_pct, 2),
+    }
+
+
 def compare_entries(a: Dict[str, Any], b: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
     comparison: Dict[str, Dict[str, Any]] = {}
     for key in ["ACRS", "ATPS", "AIFS"]:
-        before = float(a[key])
-        after = float(b[key])
-        delta = after - before
-        relative_pct = (delta / before * 100.0) if before != 0 else math.inf
-        comparison[key] = {
-            "before": round(before, 2),
-            "after": round(after, 2),
-            "delta": round(delta, 2),
-            "relative_pct": relative_pct if math.isinf(relative_pct) else round(relative_pct, 2),
-        }
+        comparison[key] = compare_metric(a[key], b[key])
     return comparison
 
 
@@ -171,13 +255,21 @@ def compare_scores(a: Dict[str, Any], b: Dict[str, Any]) -> None:
     keys = ["ACRS", "ATPS", "AIFS"]
     print(f"Comparison: {a['label']} -> {b['label']}")
     for key in keys:
-        before = float(a[key])
-        after = float(b[key])
-        delta = after - before
-        relative = (delta / before * 100.0) if before != 0 else math.inf
+        entry = compare_metric(a[key], b[key])
+        if entry["delta"] is None:
+            print(
+                f"  - {key}: {format_optional_float(entry['before'])} -> "
+                f"{format_optional_float(entry['after'])} (incomplete)"
+            )
+            continue
+
+        relative = entry["relative_pct"]
         rel_str = "inf" if math.isinf(relative) else f"{relative:.2f}%"
-        sign = "+" if delta >= 0 else ""
-        print(f"  - {key}: {before:.2f} -> {after:.2f} ({sign}{delta:.2f}, {rel_str})")
+        sign = "+" if entry["delta"] >= 0 else ""
+        print(
+            f"  - {key}: {entry['before']:.2f} -> {entry['after']:.2f} "
+            f"({sign}{entry['delta']:.2f}, {rel_str})"
+        )
 
 
 def build_markdown_report(first: Dict[str, Any], second: Dict[str, Any] | None = None) -> str:
@@ -186,10 +278,11 @@ def build_markdown_report(first: Dict[str, Any], second: Dict[str, Any] | None =
         "",
         f"## {first['label']}",
         "",
-        f"- ACRS: {first['ACRS']}/40",
-        f"- ATPS: {first['ATPS']}/60",
-        f"- AIFS: {first['AIFS']}/100",
-        f"- Rating: {rating(float(first['AIFS']))}",
+        f"- Evaluation mode: {first['evaluation_mode']}",
+        f"- ACRS: {format_scored_value(first['ACRS'], 40)}",
+        f"- ATPS: {format_scored_value(first['ATPS'], 60)}",
+        f"- AIFS: {format_scored_value(first['AIFS'], 100)}",
+        f"- Rating: {rating(first['AIFS'])}",
         "",
         "### Readiness breakdown",
         "",
@@ -197,8 +290,13 @@ def build_markdown_report(first: Dict[str, Any], second: Dict[str, Any] | None =
     for key, value in first["readiness_breakdown"].items():
         lines.append(f"- {key}: {value}")
     lines.extend(["", "### Dynamic breakdown", ""])
-    for key, value in first["dynamic_breakdown"].items():
-        lines.append(f"- {key}: {value}")
+    if first["dynamic_breakdown"] is None:
+        lines.append("- incomplete (audit-only)")
+        for item in first.get("missing_measurements", []):
+            lines.append(f"- missing: {item}")
+    else:
+        for key, value in first["dynamic_breakdown"].items():
+            lines.append(f"- {key}: {value}")
 
     if second is None:
         return "\n".join(lines) + "\n"
@@ -208,10 +306,11 @@ def build_markdown_report(first: Dict[str, Any], second: Dict[str, Any] | None =
             "",
             f"## {second['label']}",
             "",
-            f"- ACRS: {second['ACRS']}/40",
-            f"- ATPS: {second['ATPS']}/60",
-            f"- AIFS: {second['AIFS']}/100",
-            f"- Rating: {rating(float(second['AIFS']))}",
+            f"- Evaluation mode: {second['evaluation_mode']}",
+            f"- ACRS: {format_scored_value(second['ACRS'], 40)}",
+            f"- ATPS: {format_scored_value(second['ATPS'], 60)}",
+            f"- AIFS: {format_scored_value(second['AIFS'], 100)}",
+            f"- Rating: {rating(second['AIFS'])}",
             "",
             "### Readiness breakdown",
             "",
@@ -220,12 +319,23 @@ def build_markdown_report(first: Dict[str, Any], second: Dict[str, Any] | None =
     for key, value in second["readiness_breakdown"].items():
         lines.append(f"- {key}: {value}")
     lines.extend(["", "### Dynamic breakdown", ""])
-    for key, value in second["dynamic_breakdown"].items():
-        lines.append(f"- {key}: {value}")
+    if second["dynamic_breakdown"] is None:
+        lines.append("- incomplete (audit-only)")
+        for item in second.get("missing_measurements", []):
+            lines.append(f"- missing: {item}")
+    else:
+        for key, value in second["dynamic_breakdown"].items():
+            lines.append(f"- {key}: {value}")
 
     comparison = compare_entries(first, second)
     lines.extend(["", "## Comparison", ""])
     for key, values in comparison.items():
+        if values["delta"] is None:
+            lines.append(
+                f"- {key}: {format_optional_float(values['before'])} -> "
+                f"{format_optional_float(values['after'])} (incomplete)"
+            )
+            continue
         rel = values["relative_pct"]
         rel_str = "inf" if math.isinf(rel) else f"{rel:.2f}%"
         sign = "+" if values["delta"] >= 0 else ""

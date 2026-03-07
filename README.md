@@ -115,6 +115,8 @@ For one serious area comparison, keep at least:
 - `AREAS/<area>/metrics/baseline.json`
 - `AREAS/<area>/metrics/transformed.json`
 
+See the bundled example area under `AREAS/example-auth-api/` for a fully populated profile, task, metrics, and report set.
+
 ## Automation helpers
 
 This package now includes a small deterministic scaffolding layer.
@@ -127,6 +129,8 @@ python scripts/init_area.py \
   --human-name "Authentication API module" \
   --primary-path apps/api/src/modules/auth
 ```
+
+The scaffolded metrics files start in `audit-only` mode with `dynamic: null`. Fill readiness first, then switch `evaluation_mode` to `full` after you run the task set and measure dynamic outcomes.
 
 Initialize a work area with a stack-specific profile template:
 
@@ -167,6 +171,8 @@ python scripts/calculate_score.py \
   --json-out AREAS/auth-api/reports/comparison.json \
   --md-out AREAS/auth-api/reports/comparison.md
 ```
+
+Audit-only example metrics are bundled at `assets/example_audit_only_metrics.json`.
 
 ## Manual prompts
 
