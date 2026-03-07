@@ -275,4 +275,4 @@ The score script expects:
   - omit `dynamic` or set it to `null`
   - add `missing_measurements` with the missing dynamic evidence
 
-See `assets/example_audit_only_metrics.json`, `assets/example_baseline_metrics.json`, and `assets/example_transformed_metrics.json` for concrete examples.
+If you need persisted metrics examples, create them in the target repository under `AREAS/<area>/metrics/` using the schema above.

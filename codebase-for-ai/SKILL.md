@@ -13,7 +13,7 @@ Use this skill to do one of four things for a **bounded work area** inside a rep
 3. **Evaluate** the work area quantitatively.
 4. **Compare** baseline and transformed states.
 
-This skill is intentionally thin. It should orchestrate work by reading `references/RULE.md`, `references/EVALUATION.md`, the relevant checklist under `references/CHECKLISTS/`, the templates under `assets/TEMPLATES/`, and any area-specific profile files in the target repository. Do not duplicate long rules here.
+This skill is intentionally thin. It should orchestrate work by reading `references/RULE.md`, `references/EVALUATION.md`, the relevant checklist under `references/CHECKLISTS/`, and any area-specific profile files in the target repository. Read `assets/TEMPLATES/` only when the user explicitly asks to persist artifacts into files. Do not duplicate long rules here.
 
 If the repository stack is clear, read the smallest relevant stack overlay:
 
@@ -43,7 +43,7 @@ Try to infer these from the prompt or repository. Ask only when necessary.
 - target area identifier or path
 - goal: `define`, `transform`, `evaluate`, or `compare`
 - state under test: `baseline`, `transformed`, or both
-- persistence target: chat-only or write files under `AREAS/<area>/...`
+- persistence target: default to chat-only; write files under `AREAS/<area>/...` only if the user asks for persisted artifacts
 
 # Always read in this order
 
@@ -136,15 +136,13 @@ If the user asks for persisted outputs, write them under:
 8. Re-run the same evaluation logic.
 9. Compare baseline vs transformed using the same task set and same conditions.
 
-# Installed helper scripts
+# Optional helper script
 
-This skill bundles deterministic helper scripts under `scripts/`.
+This skill bundles one deterministic helper script under `scripts/`.
 
-- `scripts/init_area.py`
-- `scripts/init_task.py`
 - `scripts/calculate_score.py`
 
-When invoked from an installed skill, `init_area.py` and `init_task.py` should write into the current working directory by default, or into an explicit `--repo-root`. Do not assume the skill files live inside the target repository.
+Use it only when the user wants machine-generated score output files or deterministic score formatting. Do not assume file output is required for a normal evaluation.
 
 # Evaluation workflow
 
