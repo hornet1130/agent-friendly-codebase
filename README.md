@@ -11,6 +11,7 @@ This package is intentionally split by responsibility:
 - `TEMPLATES/`: files to copy when defining an area and its task set
 - `AREAS/`: area-local profiles, tasks, reports, and metrics
 - `scripts/`: deterministic helpers for scaffolding areas, scaffolding tasks, and calculating scores
+- `references/`: stack-specific overlays that keep the core method generic
 
 ## Why this package exists
 
@@ -73,6 +74,20 @@ To use it on Go, Python, Java, Rust, or mixed-language repos, the main adaptatio
 - describe the stack-specific contract surface
 - point the examples and failure patterns at the relevant subsystem
 
+## Stack overlays
+
+Use the generic core by default, then pull in the smallest relevant overlay:
+
+- Node or TypeScript monorepo: [node-monorepo.md](/Users/user/projects/codebase-for-ai/references/node-monorepo.md)
+- Go service or package: [go-service.md](/Users/user/projects/codebase-for-ai/references/go-service.md)
+- Python service or package: [python-service.md](/Users/user/projects/codebase-for-ai/references/python-service.md)
+
+Variant area-profile templates are also available:
+
+- [AREA_PROFILE.node-monorepo.md](/Users/user/projects/codebase-for-ai/TEMPLATES/AREA_PROFILE.node-monorepo.md)
+- [AREA_PROFILE.go-service.md](/Users/user/projects/codebase-for-ai/TEMPLATES/AREA_PROFILE.go-service.md)
+- [AREA_PROFILE.python-service.md](/Users/user/projects/codebase-for-ai/TEMPLATES/AREA_PROFILE.python-service.md)
+
 ## How to use it in another codebase
 
 This package is meant to be copied into a target repository and then used manually by the agent on demand.
@@ -111,6 +126,16 @@ python scripts/init_area.py \
   --area-id auth-api \
   --human-name "Authentication API module" \
   --primary-path apps/api/src/modules/auth
+```
+
+Initialize a work area with a stack-specific profile template:
+
+```bash
+python scripts/init_area.py \
+  --area-id auth-api \
+  --human-name "Authentication API module" \
+  --primary-path apps/api/src/modules/auth \
+  --profile-template AREA_PROFILE.node-monorepo.md
 ```
 
 Create a task file:

@@ -5,6 +5,10 @@ Usage:
   python scripts/init_area.py --area-id auth-api \
     --human-name "Authentication API module" \
     --primary-path apps/api/src/modules/auth
+  python scripts/init_area.py --area-id auth-api \
+    --human-name "Authentication API module" \
+    --primary-path apps/api/src/modules/auth \
+    --profile-template AREA_PROFILE.node-monorepo.md
 """
 
 from __future__ import annotations
@@ -35,11 +39,20 @@ def initialize_profile(
     human_name: str,
     primary_path: str,
 ) -> str:
-    content = template
-    content = content.replace("- Area ID:", f"- Area ID: {area_id}", 1)
-    content = content.replace("- Human name:", f"- Human name: {human_name}", 1)
-    content = content.replace("- Primary paths:", f"- Primary paths: `{primary_path}`", 1)
-    return content
+    replacements = {
+        "- Area ID:": f"- Area ID: {area_id}",
+        "- Human name:": f"- Human name: {human_name}",
+        "- Primary paths:": f"- Primary paths: `{primary_path}`",
+    }
+    lines = []
+    for line in template.splitlines():
+        replaced = line
+        for marker, value in replacements.items():
+            if line.startswith(marker):
+                replaced = value
+                break
+        lines.append(replaced)
+    return "\n".join(lines) + "\n"
 
 
 def initialize_report(template: str, area_id: str, state: str) -> str:
@@ -80,6 +93,11 @@ def main() -> int:
     parser.add_argument("--area-id", required=True)
     parser.add_argument("--human-name", required=True)
     parser.add_argument("--primary-path", required=True)
+    parser.add_argument(
+        "--profile-template",
+        default="AREA_PROFILE.md",
+        help="Template file name under TEMPLATES/ or an absolute/relative file path",
+    )
     parser.add_argument("--overwrite", action="store_true")
     args = parser.parse_args()
 
@@ -89,7 +107,14 @@ def main() -> int:
     reports_dir = area_dir / "reports"
     metrics_dir = area_dir / "metrics"
 
-    profile_template = read_text(root / "TEMPLATES" / "AREA_PROFILE.md")
+    template_path = Path(args.profile_template)
+    if not template_path.is_absolute():
+        candidate = root / "TEMPLATES" / args.profile_template
+        template_path = candidate if candidate.exists() else root / args.profile_template
+    if not template_path.exists():
+        raise SystemExit(f"Profile template not found: {args.profile_template}")
+
+    profile_template = read_text(template_path)
     report_template = read_text(root / "TEMPLATES" / "EVALUATION_REPORT.md")
 
     write_text(

@@ -15,6 +15,14 @@ Use this skill to do one of four things for a **bounded work area** inside a rep
 
 This skill is intentionally thin. It should orchestrate work by reading `RULE.md`, `EVALUATION.md`, templates, and any area-specific profile files. Do not duplicate long rules here.
 
+If the repository stack is clear, read the smallest relevant stack overlay:
+
+- `references/node-monorepo.md`
+- `references/go-service.md`
+- `references/python-service.md`
+
+Do not read all overlays by default. Pick only the one that matches the target area.
+
 # Core definitions
 
 A **work area** is not just a folder. It is a bounded unit of work defined by:
