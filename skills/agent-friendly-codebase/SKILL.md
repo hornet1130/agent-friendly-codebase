@@ -6,7 +6,9 @@ disable-model-invocation: true
 
 # Purpose
 
-Use this skill on a **bounded work area** in one of two modes:
+Use this skill to make a codebase more agent-friendly by improving the bounded work areas that agents need to understand, change, verify, and hand off.
+
+Apply it on a **bounded work area** in one of two modes:
 
 1. `review`
 2. `transform`
