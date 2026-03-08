@@ -121,6 +121,7 @@ The bundled smoke test creates this deterministic readiness fixture:
       "skills/agent-friendly-codebase/scripts/smoke_test.sh",
       "skills/agent-friendly-codebase/scripts/calculate_score.py"
     ],
+    "coordination_scope": "multi-agent",
     "ambiguities": []
   },
   "readiness": {
@@ -146,7 +147,7 @@ The bundled smoke test creates this deterministic readiness fixture:
       ]
     },
     "contracts": {
-      "reason": "The score model and workflow are visible in the public and maintainer docs.",
+      "reason": "The score model, workflow, and handoff-safe defaults are visible in the public and maintainer docs.",
       "evidence_refs": [
         "skills/agent-friendly-codebase/references/EVALUATION.md",
         "skills/agent-friendly-codebase/SKILL.md"
@@ -160,7 +161,7 @@ The bundled smoke test creates this deterministic readiness fixture:
       ]
     },
     "examples_persistence": {
-      "reason": "Smoke validation exists and the maintainer guide stores recurring package knowledge.",
+      "reason": "Smoke validation exists and the maintainer guide stores recurring package knowledge for future agents.",
       "evidence_refs": [
         "skills/agent-friendly-codebase/scripts/smoke_test.sh",
         "skills/agent-friendly-codebase/references/MAINTENANCE.md"
