@@ -7,10 +7,9 @@ Use this when transforming a work area.
 - [ ] Capture the key dependencies and reverse dependencies.
 - [ ] Identify the public contracts and external boundaries.
 - [ ] Capture search seeds or starting files for future exploration.
-- [ ] Confirm area-scoped build and validation commands.
-- [ ] Plan the baseline ACRS and ATPS measurement.
+- [ ] Confirm the proof path and area-scoped validation command.
+- [ ] Capture or reuse a before review snapshot.
 - [ ] Choose the smallest useful improvement unit.
 - [ ] Keep always-loaded guidance compact.
 - [ ] Prefer executable artifacts such as examples, scripts, and tests over broad prose.
-- [ ] Make sure the same task set can be re-run after the transformation.
 - [ ] Save learned patterns back into the repository.

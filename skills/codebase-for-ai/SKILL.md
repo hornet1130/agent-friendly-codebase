@@ -1,19 +1,17 @@
 ---
 name: codebase-for-ai
-description: Transform and quantitatively evaluate a bounded repository work area for AI-agent friendliness. Use when the task is to define a work area, audit it against AI-friendly codebase rules, create or improve area-specific context and workflow artifacts, or compare baseline vs transformed performance on the same task set. Do not use for unrelated feature work outside codebase-for-AI transformation or for vague repository-wide refactors without a scoped target area.
+description: Review and transform a bounded repository work area so AI agents can find the right files faster, make smaller safer changes, and verify the result with less human help. Use when the task is to inspect an area for AI-friction or improve it with a proof-oriented before/after workflow.
 disable-model-invocation: true
 ---
 
 # Purpose
 
-Use this skill on a **bounded work area** to do one of four things:
+Use this skill on a **bounded work area** in one of two modes:
 
-1. `define`
+1. `review`
 2. `transform`
-3. `evaluate`
-4. `compare`
 
-Keep this file thin. Read the rules, score model, relevant checklist, and any area-local artifacts. Read templates only when the user asked to persist files.
+Keep this file thin. Read the rules, the default scoring path, the relevant checklist, and any area-local artifacts. Read templates only when the user asked to persist files.
 
 ## Work area
 
@@ -24,7 +22,6 @@ A work area is a bounded unit of work defined by:
 - public contracts
 - commands used to build, run, and validate it
 - typical change types
-- representative tasks
 
 If the user names only a path, infer the smallest reasonable work area around it.
 
@@ -33,8 +30,8 @@ If the user names only a path, infer the smallest reasonable work area around it
 Infer these unless asking is necessary:
 
 - target area identifier or path
-- goal: `define`, `transform`, `evaluate`, or `compare`
-- state under test: `baseline`, `transformed`, or both
+- goal: `review` or `transform`
+- proof command or trusted validation path
 - persistence target: default to chat-only
 
 ## Read path
@@ -42,10 +39,10 @@ Infer these unless asking is necessary:
 Read in this order:
 
 1. `references/RULE.md`
-2. `references/EVALUATION.md`
+2. `references/EVALUATION.md` through the default workflow sections
 3. the relevant checklist under `references/CHECKLISTS/`
 4. `AREAS/<area>/PROFILE.md` if present
-5. existing tasks, reports, and metrics for that area
+5. existing profiles, reports, and metrics for that area
 
 If the repository stack is obvious, read only the smallest matching overlay:
 
@@ -54,101 +51,65 @@ If the repository stack is obvious, read only the smallest matching overlay:
 - `references/python-service.md`
 
 Read `references/MAINTENANCE.md` only for packaging, smoke-test, or score-script maintenance on this skill itself.
-Read `references/SELF_EVAL.md` only when evaluating or maintaining `codebase-for-ai` itself.
 
 ## Output contract
 
-### `define`
+### `review`
 
 Produce:
 
 - area boundary summary
-- dependency map and likely blast radius
-- key entrypoints and contracts
-- search starting points
-- canonical commands
-- missing-information list
-- proposed task set outline
+- key entrypoints, contracts, and search starting points
+- canonical command and proof path summary
+- readiness snapshot score
+- top AI-friction gaps
+- smallest useful next improvements
+
+The default `review` result is a lightweight before snapshot.
 
 ### `transform`
 
 Produce:
 
-- baseline gap table against `references/RULE.md`
-- smallest changes that improve the target rules
-- artifact plan for docs, scripts, examples, tests, or scoped instructions
-- changed or proposed file list
-- validation plan and remaining risks
-- post-change evaluation plan
+- the scoped area and agreed proof path
+- a before snapshot, unless a still-valid review result can be reused
+- the smallest changes that improve the target area
+- proof results
+- an after snapshot
+- before vs after delta
+- remaining risks
 
-Prefer minimal, load-bearing artifacts over documentation bulk.
-
-### `evaluate`
-
-Produce numeric results, not prose only:
-
-- readiness score breakdown
-- dynamic task score breakdown
-- total score
-- grader approach and evidence locations
-- supporting evidence per metric
-- confidence and measurement gaps
-
-### `compare`
-
-Produce:
-
-- side-by-side score table
-- absolute delta
-- relative delta
-- strongest improvements
-- remaining blockers
-- recommendation: keep, revise, rollback, or expand
+Prefer the smallest high-value diff over broad cleanups.
 
 ## Workflow
 
-If the user asks for the full pipeline, run:
-
-1. `define`
-2. baseline `evaluate`
-3. `transform`
-4. transformed `evaluate`
-5. `compare`
-
-For transformations:
+### `review`
 
 1. bound the area
-2. map entrypoints, contracts, commands, and tests
-3. record the baseline proof commands
-4. score the baseline
-5. apply or propose the smallest high-value changes
-6. re-run area proof first, then broader checks
-7. re-run the same evaluation logic
-8. compare baseline and transformed states under the same conditions
+2. map entrypoints, contracts, and commands
+3. score the current readiness snapshot
+4. report the biggest gaps and next actions
+
+### `transform`
+
+1. confirm the area, goal, and proof path
+2. reuse a recent valid review when possible, otherwise create a before snapshot
+3. apply the smallest useful changes
+4. run the proof path
+5. create an after snapshot
+6. report the delta and remaining risks
 
 ## Persisted outputs
 
 Only write files when the user asks. Default paths:
 
 - `AREAS/<area>/PROFILE.md`
-- `AREAS/<area>/tasks/*.md`
-- `AREAS/<area>/reports/baseline.md`
-- `AREAS/<area>/reports/transformed.md`
-- `AREAS/<area>/reports/comparison.md`
-- `AREAS/<area>/metrics/baseline.json`
-- `AREAS/<area>/metrics/transformed.json`
-
-## Helpers
-
-This skill bundles:
-
-- `scripts/smoke_test.sh`
-- `scripts/self_eval_check.sh`
-- `scripts/build_self_eval_metrics.py`
-- `scripts/summarize_self_eval_runs.py`
-- `scripts/calculate_score.py`
-
-Packaging and validation details live in `references/MAINTENANCE.md`.
+- `AREAS/<area>/reports/review.md`
+- `AREAS/<area>/reports/before.md`
+- `AREAS/<area>/reports/after.md`
+- `AREAS/<area>/metrics/review.json`
+- `AREAS/<area>/metrics/before.json`
+- `AREAS/<area>/metrics/after.json`
 
 ## Guardrails
 
@@ -156,16 +117,14 @@ Packaging and validation details live in `references/MAINTENANCE.md`.
 - Keep always-loaded guidance short and push detail into supporting files.
 - Prefer area-scoped guidance over repo-wide blanket rules.
 - Prefer executable verification over narrative claims.
-- Prefer representative tasks from real work history over toy tasks.
-- Never compare runs that changed task set, budget, tools, or scaffolding.
 - Never claim a transformation is safe unless the named proof path and regression checks were run, or you state that safety is unproven.
 
 ## Maintenance notes
 
 When maintaining this skill itself:
 
+- use the helper scripts documented in `references/MAINTENANCE.md`
 - keep packaging and verification notes in `references/MAINTENANCE.md`
-- keep the fixed self-task set in `references/SELF_EVAL.md`
 - keep scoring-model changes in `references/EVALUATION.md`
 - keep workflow changes in `SKILL.md`
 

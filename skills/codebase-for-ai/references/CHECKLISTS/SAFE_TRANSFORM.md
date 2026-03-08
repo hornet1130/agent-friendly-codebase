@@ -2,7 +2,7 @@
 
 Use this when applying a transformation to a live work area.
 
-- [ ] Record the baseline proof commands before changing anything.
+- [ ] Record the before-state proof commands before changing anything.
 - [ ] Confirm the fastest trusted validation path for the area.
 - [ ] Confirm the broader regression check that should remain green.
 - [ ] Prefer the smallest diff that improves the target rule gaps.

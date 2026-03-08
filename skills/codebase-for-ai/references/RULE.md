@@ -6,10 +6,9 @@ This file defines what this package means by an AI-friendly codebase and what ru
 
 An AI-friendly codebase is a structural combination of code, documentation, tooling, tests, and local guidance that lets an agent, under the same model, tools, time, and budget:
 
-- solve representative tasks with a high success rate
 - reach relevant context with low exploration cost
-- verify changes without heavy human intervention
-- reuse what it learned in later tasks
+- make bounded changes with a predictable blast radius
+- verify changes with a short trusted proof path
 
 This package evaluates AI-friendliness at the **work area** level, not at the whole-repository level.
 
@@ -19,7 +18,7 @@ A **work area** is a bounded unit of work defined by:
 - explicit entrypoints
 - visible external and internal contracts
 - canonical build, run, and validation commands
-- a representative task set
+- a lightweight review rubric and proof path
 
 Examples:
 
@@ -224,22 +223,22 @@ Anti-patterns:
 
 ### R11. Evaluation readiness
 
-Purpose: ensure the area can be measured before and after transformation.
+Purpose: ensure the area can be reviewed before and after transformation with the same rubric and proof path.
 
 Must:
 
-- define a representative task set
-- keep the same success oracle, budget, and task set across baseline and transformed runs
+- define a lightweight review rubric and proof path for day-to-day work
+- keep the same readiness rubric and proof path across before and after snapshots
 - preserve enough evidence to justify the score
 
 Should:
 
-- use real tasks from issue or PR history when possible
-- keep raw logs, traces, or notes when running repeated evaluations
+- keep proof outputs or equivalent notes when changes matter
+- make before/after score deltas easy to explain from visible evidence
 
 Anti-patterns:
 
-- comparing different task sets and calling it improvement
+- changing the proof path between before and after without saying so
 - scoring from intuition alone without evidence
 
 ## Operating principles
@@ -248,4 +247,4 @@ Anti-patterns:
 - Prefer area-scoped guidance over repository-wide bulk text.
 - Prefer a few high-value artifacts over documentation sprawl.
 - Do not treat "more documentation" as improvement by default.
-- Measure the baseline before claiming the transformation helped.
+- Measure the before state before claiming the transformation helped.

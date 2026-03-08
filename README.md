@@ -1,6 +1,6 @@
 # codebase-for-ai
 
-`codebase-for-ai` is a `skills.sh` skill for making a bounded work area easier for AI agents to navigate, change, and verify.
+`codebase-for-ai` is a `skills.sh` skill for making a bounded work area easier for AI agents to review, change, and verify.
 
 ## Install
 
@@ -12,21 +12,19 @@ npx skills add https://github.com/hornet1130/codebase-for-ai
 
 Use this skill when you want an agent to work on a codebase more like a good teammate and less like a tourist.
 
-It is designed for four kinds of work:
+It is designed for two practical workflows:
 
-- define a bounded work area
-- evaluate how AI-friendly that area is
-- transform the area to reduce agent friction
-- compare baseline and transformed states with the same task set
+- `review`: inspect a bounded work area, score its current readiness, and surface the biggest AI-friction points
+- `transform`: improve a bounded work area, run the proof path, and report the before/after delta
 
 ## How to Ask
 
-Good requests are concrete about the area and the goal. For example:
+Good requests are concrete about the area and the proof path. For example:
 
-- `Use codebase-for-ai to evaluate apps/api/src/modules/auth`
-- `Use codebase-for-ai to define the checkout work area and identify the blast radius`
+- `Use codebase-for-ai to review apps/api/src/modules/auth`
+- `Use codebase-for-ai to review the checkout area and show the biggest AI-friction points`
 - `Use codebase-for-ai to transform packages/shared/http-client so an AI agent can ship bug fixes with less context hunting`
-- `Use codebase-for-ai to compare the baseline and transformed states of apps/web/src/features/checkout`
+- `Use codebase-for-ai to transform apps/web/src/features/checkout and use pnpm test --filter checkout as the proof command`
 - `Use codebase-for-ai on this repo, but keep the result chat-only unless I ask you to persist files`
 
 ## What You Get
@@ -36,9 +34,9 @@ Depending on the request, the skill produces some combination of:
 - work-area boundaries and entrypoints
 - canonical commands and validation paths
 - contract and blast-radius mapping
-- readiness scoring
-- dynamic task evaluation plans
-- baseline vs transformed comparisons
+- before or review snapshot scoring
+- proof-oriented transformation plans
+- before vs after comparisons for the transformed area
 
 By default, the result is returned in chat. It only writes files when the user explicitly asks for persisted artifacts.
 
@@ -51,7 +49,7 @@ This skill was built by applying the skill to itself in repeated loops.
 - add only load-bearing artifacts that improve boundaries, contracts, verification, or persistence
 - re-score after each loop and keep the package deployable for `skills.sh`
 
-The current package was shaped through that sequence: packaging cleanup, smoke validation, fixed self-task set, dynamic metrics builder, and repeated-run summary support.
+The current package was shaped through that sequence: packaging cleanup, smoke validation, review-first maintenance guidance, and readiness-score simplification.
 
 ## Philosophy
 
@@ -78,17 +76,12 @@ skills/
     agents/openai.yaml
     references/
     assets/TEMPLATES/
-    scripts/smoke_test.sh
-    scripts/self_eval_check.sh
-    scripts/build_self_eval_metrics.py
-    scripts/summarize_self_eval_runs.py
-    scripts/calculate_score.py
+    scripts/
 ```
 
 ## Maintainer Notes
 
 - Packaging and validation workflow: `skills/codebase-for-ai/references/MAINTENANCE.md`
-- Fixed self-benchmark task set: `skills/codebase-for-ai/references/SELF_EVAL.md`
 - Scoring model and qualitative bands: `skills/codebase-for-ai/references/EVALUATION.md`
 
 Only deployable skill files are tracked in this repository.
