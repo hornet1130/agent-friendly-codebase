@@ -62,7 +62,7 @@ When saved outputs are requested, keep them under `AREAS/<area>/`. Typical files
 - `AREAS/<area>/metrics/before.json`
 - `AREAS/<area>/metrics/after.json`
 
-## Canonical smoke test
+## Fixture smoke test
 
 Run these commands from the repository root:
 
@@ -71,8 +71,12 @@ python3 -m py_compile skills/agent-friendly-codebase/scripts/calculate_score.py
 sh skills/agent-friendly-codebase/scripts/smoke_test.sh
 ```
 
+This smoke test uses a deterministic fixture to verify the score-script contract and output format.
+It is not a live review of the package.
+
 Expected result:
 
+- the smoke test prints `Fixture mode: deterministic sample, not a live package review`
 - the score script compiles
 - the smoke test prints `ACRS: 28/40`
 - the smoke test prints `Readiness band: so-so`
@@ -105,7 +109,7 @@ Use these first when the task is obvious:
 
 ## Worked example
 
-The bundled smoke test creates this minimal readiness input:
+The bundled smoke test creates this deterministic readiness fixture:
 
 ```json
 {

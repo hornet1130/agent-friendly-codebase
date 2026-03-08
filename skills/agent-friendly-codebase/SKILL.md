@@ -115,14 +115,5 @@ Prefer the smallest high-value diff over broad cleanups.
 - When multi-agent work matters, prefer artifacts that reduce handoff ambiguity and conflict hotspots.
 - Never claim a transformation is safe unless the named proof path and regression checks were run, or you state that safety is unproven.
 
-## Maintenance notes
-
-When maintaining this skill itself:
-
-- use the helper scripts documented in `references/MAINTENANCE.md`
-- keep packaging and verification notes in `references/MAINTENANCE.md`
-- keep scoring-model changes in `references/EVALUATION.md`
-- keep workflow changes in `SKILL.md`
-
 Use compact headings and separate facts, scores, decisions, and unknowns.
 Mark partial evidence as estimated or missing.

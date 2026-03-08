@@ -43,7 +43,6 @@ grep -q 'skills/agent-friendly-codebase/references/EVALUATION.md' "$readme"
 grep -q '^## Install$' "$readme"
 grep -q '^## How to Ask$' "$readme"
 grep -q '^## Maintainer Notes$' "$readme"
-grep -q 'scripts/' "$readme"
 grep -q 'display_name:' "$metadata"
 grep -q 'agent-friendly-codebase' "$metadata"
 
@@ -95,6 +94,11 @@ if grep -q '^## Score model$' "$readme"; then
   exit 1
 fi
 
+if grep -q '^## Philosophy$' "$readme" || grep -q '^## Layout$' "$readme" || grep -q '^## How It Was Built$' "$readme"; then
+  echo "ownership drift: extended package narrative does not belong in README.md" >&2
+  exit 1
+fi
+
 if grep -q 'boundary_entrypoints' "$readme"; then
   echo "ownership drift: readiness schema belongs in EVALUATION.md" >&2
   exit 1
@@ -102,6 +106,11 @@ fi
 
 if grep -q '^## Persisted outputs$' "$skill"; then
   echo "ownership drift: saved output paths belong in MAINTENANCE.md" >&2
+  exit 1
+fi
+
+if grep -q '^## Maintenance notes$' "$skill"; then
+  echo "ownership drift: maintenance notes belong in MAINTENANCE.md" >&2
   exit 1
 fi
 

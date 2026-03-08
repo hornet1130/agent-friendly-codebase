@@ -78,6 +78,7 @@ cat >"$tmpdir/smoke-test.json" <<'EOF'
 EOF
 
 output="$(python3 "$script_dir/calculate_score.py" "$tmpdir/smoke-test.json")"
+printf '%s\n' "Fixture mode: deterministic sample, not a live package review"
 printf '%s\n' "$output"
 
 printf '%s\n' "$output" | grep -q "Area: skills/agent-friendly-codebase"
