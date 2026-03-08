@@ -1,6 +1,6 @@
 ---
 name: agent-friendly-codebase
-description: Review and transform a bounded repository work area so agents can find the right files faster, make smaller safer changes, verify the result with less human help, and hand off work with low ambiguity. Use when the task is to inspect an area for agent-friction or improve it with a proof-backed workflow.
+description: Make a codebase more agent-friendly by reviewing and transforming bounded repository work areas so agents can find the right files faster, make smaller safer changes, verify the result with less human help, and hand off work with low ambiguity. Use when the task is to inspect an area for agent-friction or improve it with a proof-backed workflow.
 disable-model-invocation: true
 ---
 

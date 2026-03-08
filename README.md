@@ -1,6 +1,6 @@
 # agent-friendly-codebase
 
-`agent-friendly-codebase` is a `skills.sh` skill for making a bounded work area easier for agents to review, change, verify, and hand off.
+`agent-friendly-codebase` is a `skills.sh` skill for making a codebase more agent-friendly by improving bounded work areas that agents need to review, change, verify, and hand off.
 
 ## Install
 
