@@ -3,21 +3,28 @@
 ## 1. Metadata
 
 - Area ID:
-- State: baseline | transformed
-- Evaluation mode: audit-only | full
+- Work area path:
+- State: review | before | after
 - Date:
+- Proof command:
+- Proof result:
+- Readiness band:
+
+Optional:
 - Agent/model:
 - Tool permissions:
-- Budget:
 - Evaluator:
-- Grader approach:
 - Raw evidence / log location:
 
-## 2. Task set summary
+## 2. Snapshot summary
 
-- Number of tasks:
-- Task distribution:
-- Repeated runs per task:
+- Review rubric used:
+- Evidence refs:
+- Strongest evidence:
+- Weakest evidence / ambiguity:
+- Before vs after delta:
+- Search starting points:
+- Immediate next step:
 
 ## 3. Static readiness scores
 
@@ -30,37 +37,13 @@
 | S5 Examples, Verification & Persistence | |
 | **ACRS** | |
 
-## 4. Dynamic task scores
-
-For audit-only runs, write `incomplete` for each value and score in this section.
-
-| Metric | Value | Score |
-|---|---:|---:|
-| Resolve Rate | | |
-| Valid Patch Rate | | |
-| Regression-Free Rate | | |
-| Context Efficiency | | |
-| Human Dependence | | |
-| Reuse Gain | | |
-| **ATPS** | | |
-
-## 5. Total
+## 4. Total
 
 | Metric | Score |
 |---|---:|
 | ACRS | |
-| ATPS | incomplete if audit-only |
-| **AIFS** | incomplete if audit-only |
 
-## 6. Evidence
-
-- Strongest evidence for improvement:
-- Weakest evidence / ambiguity:
-- Missing measurements:
-- Transcript or run-log locations:
-- Grader notes:
-
-## 7. Rule-level findings
+## 5. Rule-level findings
 
 | Rule | Status | Notes |
 |---|---|---|
@@ -76,7 +59,8 @@ For audit-only runs, write `incomplete` for each value and score in this section
 | R10 Observability | | |
 | R11 Evaluation readiness | | |
 
-## 8. Recommendation
+## 6. Recommendation
 
 - Keep / revise / rollback / expand:
-- Immediate next step:
+- Main friction points:
+- Remaining risks:

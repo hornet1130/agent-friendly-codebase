@@ -1,64 +1,60 @@
 # EVALUATION.md
 
-This file defines the scoring model for comparing a work area's `baseline` and `transformed` states.
+This file defines the practical scoring model for `review` and `transform`.
 
-## Evaluation goal
+The current package uses a **readiness snapshot** model only.
 
-Use the same work area and the same task set to measure whether a transformation improved AI-friendliness under fixed conditions.
+## Evaluation flow
 
-Use two layers:
+Use these default workflows:
 
-1. `Static Readiness Audit`
-2. `Dynamic Task Evaluation`
+- `review` -> readiness snapshot
+- `transform` -> before snapshot, change, proof, after snapshot, delta
 
-Static audit alone is not enough. Dynamic task performance is required for a full comparison.
+Do not invent a heavier protocol unless the user explicitly asks for one and is willing to define it outside this package.
 
-## Fixed experimental conditions
+## Fixed comparison conditions
 
-Keep these fixed when comparing `baseline` and `transformed`:
+When comparing before and after states, keep these fixed:
 
-- repository base revision, or a clearly comparable baseline
 - the same work area
-- the same task set
+- the same readiness rubric
+- the same proof path
 - the same agent or model family
 - the same tool permissions
-- the same time, token, or cost budget
-- the same success oracle
+- the same evidence standard
 
-If any of these change, treat the result as a different experiment.
+If any of these change, treat the result as a different evaluation.
 
 ## Score model
 
-The total score is `AIFS`:
+The snapshot score is `ACRS`:
 
-`AIFS = ACRS + ATPS`
+`ACRS = S1 + S2 + S3 + S4 + S5`
 
 - `ACRS`: AI Codebase Readiness Score, `0..40`
-- `ATPS`: Agent Task Performance Score, `0..60`
-- `AIFS`: total score, `0..100`
-
-Interpretation:
-
-- `85..100`: agent-ready
-- `70..84`: workable with low to moderate friction
-- `50..69`: partially workable, high guidance cost
-- `<50`: human-dependent area
 
 Three-level summary band:
 
-- `good`
-  - full evaluation: `AIFS >= 85`
-  - audit-only proxy: `ACRS >= 32`
-- `so-so`
-  - full evaluation: `60 <= AIFS < 85`
-  - audit-only proxy: `24 <= ACRS < 32`
-- `bad`
-  - full evaluation: `AIFS < 60`
-  - audit-only proxy: `ACRS < 24`
+- `good`: `ACRS >= 32`
+- `so-so`: `24 <= ACRS < 32`
+- `bad`: `ACRS < 24`
 
-Use the audit-only band only as a static-readiness proxy. Do not confuse it with a full dynamic result.
+Use the summary band as the quick headline. Use the sub-scores to explain the result.
 
-## ACRS: static readiness audit
+## Scoring anchors
+
+To keep repeated reviews closer together, prefer these anchors:
+
+- `0`: effectively absent
+- `2`: weak or mostly implicit
+- `4`: partially usable, but important gaps remain
+- `6`: solid for normal work, with only moderate friction
+- `8`: explicit, current, easy to use, and low ambiguity
+
+Use odd numbers only when the area clearly falls between two anchors.
+
+## ACRS categories
 
 Each readiness category is scored from `0` to `8`.
 
@@ -71,14 +67,26 @@ Evidence to look for:
 - important dependencies and reverse dependencies are visible
 - there is a clear starting point for exploration
 
+Anchor interpretation:
+
+- `0`: boundary and starting files are unclear
+- `4`: the main path is inferable, but dependencies or entrypoints are still patchy
+- `8`: boundary, entrypoints, and starting files are explicit and easy to follow
+
 ### S2. Commands and environment
 
 Evidence to look for:
 
-- canonical install, build, test, lint, and dev commands exist
-- at least one area-scoped command exists
+- canonical install, build, test, lint, and dev commands exist, or clear equivalents are called out
+- at least one area-scoped proof or validation command exists
 - common failure causes are documented briefly
 - env vars, seeds, fixtures, or setup entrypoints are visible
+
+Anchor interpretation:
+
+- `0`: no trusted command path
+- `4`: proof path exists, but setup or command coverage is incomplete
+- `8`: normal build, test, and proof paths are explicit with low setup ambiguity
 
 ### S3. Contracts and change surface
 
@@ -89,6 +97,12 @@ Evidence to look for:
 - external integrations are visible
 - likely impact radius is predictable
 
+Anchor interpretation:
+
+- `0`: contracts are mostly implicit
+- `4`: main contracts are visible, but impact radius is still hard to predict
+- `8`: contract surfaces and likely blast radius are explicit and easy to trace
+
 ### S4. Context hierarchy and economy
 
 Evidence to look for:
@@ -97,6 +111,12 @@ Evidence to look for:
 - always-loaded instructions are not bloated
 - detail is pushed to supporting files
 - duplication and conflicts between guidance files are low
+
+Anchor interpretation:
+
+- `0`: guidance is bloated, scattered, or contradictory
+- `4`: guidance is usable, but layering or duplication still causes drift
+- `8`: high-signal default guidance with clear supporting references and low duplication
 
 ### S5. Examples, verification, and persistence
 
@@ -107,187 +127,134 @@ Evidence to look for:
 - known failures or debug notes are captured
 - there is an explicit place to store learned patterns
 
-### ACRS formula
+Anchor interpretation:
 
-`ACRS = S1 + S2 + S3 + S4 + S5`
+- `0`: no dependable examples or verification path
+- `4`: either verification or examples exist, but persistence is inconsistent
+- `8`: examples, verification, and knowledge capture are all easy to find and current
 
-## ATPS: dynamic task evaluation
+## Default reporting
 
-### Task set guidance
+### `review`
 
-Recommended task counts:
+Report:
 
-- pilot: `8..12`
-- formal comparison: `20..40`
-
-Recommended task mix:
-
-- bug fix: `30%..40%`
-- feature addition: `20%..30%`
-- refactor: `15%..25%`
-- test authoring or hardening: `10%..20%`
-- repo QA or code understanding: `10%..20%`
-
-Prefer tasks from real issue or PR history whenever possible.
-
-### Required data per task
-
-Each task should capture at least:
-
-- task id
-- task type
-- problem statement
-- area path
-- expected relevant files or gold context
-- validation command
-- success oracle
-
-### Grader choice
-
-Prefer code-based graders for coding work whenever success can be made executable.
-
-- Use code-based grading when tests, builds, or deterministic checks exist.
-- Use model-based or human grading only when success cannot be reduced to a reliable executable check.
-- Preserve raw logs, transcripts, or equivalent run evidence when available so later comparisons can be audited.
-
-### D1. Resolve rate (`0..20`)
-
-`resolve_rate = resolved_tasks / total_tasks`
-
-`D1 = 20 * resolve_rate`
-
-A task is `resolved` only if it satisfies the success oracle.
-
-### D2. Valid patch rate (`0..10`)
-
-`valid_patch_rate = valid_patches / total_tasks`
-
-`D2 = 10 * valid_patch_rate`
-
-A patch is `valid` if it at least builds or runs the target validation path.
-
-### D3. Regression-free rate (`0..10`)
-
-`regression_free_rate = regression_free_tasks / total_tasks`
-
-`D3 = 10 * regression_free_rate`
-
-### D4. Context efficiency (`0..10`)
-
-Track three normalized values in `0..1`:
-
-- `context_precision`: ratio of read files that were actually relevant
-- `context_recall`: ratio of gold relevant files that were actually read
-- `first_relevant_hit_rate`: how quickly the first relevant file was reached
-
-Formula:
-
-`D4 = 5 * context_precision + 3 * context_recall + 2 * first_relevant_hit_rate`
-
-### D5. Human dependence (`0..5`)
-
-Track two normalized values in `0..1`:
-
-- `human_intervention_free_rate`
-- `review_acceptance_rate`
-
-Formula:
-
-`D5 = 3 * human_intervention_free_rate + 2 * review_acceptance_rate`
-
-### D6. Reuse gain (`0..5`)
-
-Use this only when you have a meaningful sequence of related tasks.
-
-Track:
-
-- `sequence_gain`: normalized improvement in downstream task success
-- `cost_reduction_rate`: normalized reduction in downstream time, token, or cost
-
-Formula:
-
-`D6 = 3 * clamp(sequence_gain, 0, 1) + 2 * clamp(cost_reduction_rate, 0, 1)`
-
-If there is no sequence, set `D6 = 0` and say so explicitly.
-
-### ATPS formula
-
-`ATPS = D1 + D2 + D3 + D4 + D5 + D6`
-
-## Audit-only vs full evaluation
-
-Use `audit-only` when dynamic tasks have not been executed yet.
-
-Requirements for an audit-only result:
-
-- report `ACRS`
-- mark `ATPS` as incomplete or estimated
-- mark `AIFS` as incomplete because the dynamic layer is missing
-- state the missing measurements clearly
-
-Use `full evaluation` only when static and dynamic data are both available.
-
-## Reporting requirements
-
-Every serious result should record:
-
-- `ACRS`, `ATPS`, and `AIFS`
-- three-level AI-friendliness summary band
+- `ACRS`
 - readiness breakdown
-- dynamic breakdown
-- task-level pass or fail
-- evidence for each score
-- time, token, or cost notes when available
-- human intervention notes
+- summary band
+- biggest gaps
+- recommended proof path
 
-Comparison reports should include:
+### `transform`
 
-- absolute delta: `transformed - baseline`
-- relative delta
-- strongest improvement areas
-- remaining blockers
-- recommendation: keep, revise, rollback, or expand
+Report:
 
-## Recommended statistics
+- before `ACRS`
+- proof results after the change
+- after `ACRS`
+- absolute delta
+- remaining risks
 
-If agent behavior is stochastic, run each task multiple times.
+## Evidence minimum
 
-Reasonable defaults:
+Every scored result should include:
 
-- binary outcomes: paired bootstrap confidence interval or McNemar
-- continuous outcomes such as time or tokens: paired bootstrap or Wilcoxon signed-rank
-- report median and spread, not only the mean
+- the bounded work area
+- the proof path used or proposed
+- the evidence references used for scoring
+- the evidence behind each sub-score
+- any missing evidence or ambiguity
 
-If publication-quality rigor matters, preserve per-task raw logs.
+Do not claim a transformation helped unless the before and after scores use the same rubric and proof path.
 
-## Metrics file format
+## Metrics JSON schema
 
-The score script expects:
+`scripts/calculate_score.py` expects a JSON object with:
 
-- required top-level keys: `label`, `readiness`
-- optional top-level keys: `evaluation_mode`, `dynamic`, `missing_measurements`
-- readiness keys:
+- `label` as an optional string
+- `context` as an object containing:
+  - `area`
+  - `proof_path`
+  - `evidence_refs`
+  - `ambiguities` as an optional list of strings
+- `readiness` as an object containing:
   - `boundary_entrypoints`
   - `commands_env`
   - `contracts`
   - `context_hierarchy`
   - `examples_persistence`
-- for `full` evaluation files:
-  - omit `evaluation_mode` or set it to `full`
-  - provide `dynamic` with these keys:
-    - `resolve_rate`
-    - `valid_patch_rate`
-    - `regression_free_rate`
-    - `context_precision`
-    - `context_recall`
-    - `first_relevant_hit_rate`
-    - `human_intervention_free_rate`
-    - `review_acceptance_rate`
-    - `sequence_gain`
-    - `cost_reduction_rate`
-- for `audit-only` files:
-  - set `evaluation_mode` to `audit-only`
-  - omit `dynamic` or set it to `null`
-  - add `missing_measurements` with the missing dynamic evidence
+- `justification` as an object with the same five readiness keys, where each key contains:
+  - `reason`
+  - `evidence_refs`
 
-If you need persisted metrics examples, create them in the target repository under `AREAS/<area>/metrics/` using the schema above.
+Each readiness value must be numeric in `[0, 8]`.
+Each justification `reason` must be a non-empty string.
+Each justification `evidence_refs` value must be a non-empty list of strings.
+
+Minimal example:
+
+```json
+{
+  "label": "checkout review",
+  "context": {
+    "area": "apps/web/src/features/checkout",
+    "proof_path": "pnpm test --filter checkout",
+    "evidence_refs": [
+      "apps/web/src/features/checkout/index.ts",
+      "apps/web/src/features/checkout/README.md"
+    ],
+    "ambiguities": []
+  },
+  "readiness": {
+    "boundary_entrypoints": 6,
+    "commands_env": 5,
+    "contracts": 6,
+    "context_hierarchy": 5,
+    "examples_persistence": 6
+  },
+  "justification": {
+    "boundary_entrypoints": {
+      "reason": "Primary paths and entrypoints are visible, but reverse dependencies are only partly documented.",
+      "evidence_refs": [
+        "apps/web/src/features/checkout/index.ts",
+        "apps/web/src/features/checkout/README.md"
+      ]
+    },
+    "commands_env": {
+      "reason": "Area proof path exists, but setup notes are still thin.",
+      "evidence_refs": [
+        "apps/web/package.json",
+        "apps/web/src/features/checkout/README.md"
+      ]
+    },
+    "contracts": {
+      "reason": "Main request and schema surfaces are visible.",
+      "evidence_refs": [
+        "apps/web/src/features/checkout/schema.ts"
+      ]
+    },
+    "context_hierarchy": {
+      "reason": "The area has local guidance, but some global notes still overlap.",
+      "evidence_refs": [
+        "AGENTS.md",
+        "apps/web/src/features/checkout/README.md"
+      ]
+    },
+    "examples_persistence": {
+      "reason": "Verification exists and known patterns are recorded in the area README.",
+      "evidence_refs": [
+        "apps/web/src/features/checkout/README.md",
+        "apps/web/src/features/checkout/checkout.test.ts"
+      ]
+    }
+  }
+}
+```
+
+The score script emits:
+
+- `ACRS`
+- readiness breakdown
+- summary band
+
+Use the script for stable formatting, not as a substitute for evidence.

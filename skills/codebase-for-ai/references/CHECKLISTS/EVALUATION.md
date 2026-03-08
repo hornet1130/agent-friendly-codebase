@@ -1,17 +1,12 @@
 # EVALUATION CHECKLIST
 
-Use this when scoring a baseline or transformed state.
+Use this when scoring a review snapshot or a before/after transformation.
 
-- [ ] Baseline and transformed runs use the same work area.
-- [ ] Baseline and transformed runs use the same task set.
-- [ ] Agent, model family, tools, and budget are fixed.
+- [ ] Before and after snapshots use the same work area.
+- [ ] Before and after snapshots use the same readiness rubric and proof path.
+- [ ] The score record captures the work area, proof path, and evidence refs.
 - [ ] Each ACRS score has supporting evidence.
-- [ ] Each task has a success oracle.
-- [ ] The grader approach is explicit for the task set.
-- [ ] `valid patch` and `resolved` are recorded separately.
-- [ ] Regression-free status is measured explicitly.
-- [ ] Context precision and recall have traceable evidence.
+- [ ] Each `S1` to `S5` score has a short rationale tied to specific evidence refs.
+- [ ] Proof results are recorded explicitly.
 - [ ] Raw logs, transcripts, or equivalent evidence locations are recorded when available.
-- [ ] Human intervention is recorded.
-- [ ] Reuse gain is measured, or explicitly marked as unavailable.
-- [ ] Comparisons include both absolute and relative deltas.
+- [ ] Before/after comparisons include absolute deltas.
