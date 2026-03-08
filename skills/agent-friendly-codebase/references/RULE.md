@@ -1,14 +1,15 @@
 # RULE.md
 
-This file defines what this package means by an AI-friendly codebase and what rules a transformed work area should satisfy.
+This file defines what this package means by an agent-friendly codebase and what rules a transformed work area should satisfy.
 
 ## Core definition
 
-An AI-friendly codebase is a structural combination of code, documentation, tooling, tests, and local guidance that lets an agent, under the same model, tools, time, and budget:
+An agent-friendly codebase is a structural combination of code, documentation, tooling, tests, and local guidance that lets one agent or several cooperating agents, under the same model, tools, time, and budget:
 
 - reach relevant context with low exploration cost
 - make bounded changes with a predictable blast radius
 - verify changes with a short trusted proof path
+- hand off or split work with low ambiguity and low conflict risk
 
 This package evaluates AI-friendliness at the **work area** level, not at the whole-repository level.
 
@@ -19,6 +20,7 @@ A **work area** is a bounded unit of work defined by:
 - visible external and internal contracts
 - canonical build, run, and validation commands
 - a lightweight review rubric and proof path
+- visible ownership, handoff, or collision surfaces when several agents may touch it
 
 Examples:
 
@@ -56,6 +58,7 @@ Must:
 
 - expose the important public contracts such as routes, APIs, schemas, DTOs, or env dependencies
 - make external system boundaries visible through types or docs
+- make ownership lanes or handoff surfaces visible when several agents need the same area
 
 Should:
 
@@ -113,6 +116,7 @@ Must:
 
 - make the common edit surface observable
 - explain when cross-boundary edits are required and why
+- make likely conflict hotspots visible when parallel work is expected
 
 Should:
 
@@ -192,6 +196,7 @@ Purpose: keep learned patterns from disappearing between sessions.
 Must:
 
 - externalize recurring patterns, mistakes, and conventions into docs, skills, tests, ADRs, or similar artifacts
+- preserve handoff notes or shared coordination patterns when several agents benefit from them
 
 Should:
 
@@ -210,6 +215,7 @@ Purpose: make failures diagnosable instead of mysterious.
 Must:
 
 - identify the main logs, error paths, or state checkpoints for the area
+- keep shared debug starting points visible when one agent may need to continue another agent's investigation
 
 Should:
 
@@ -230,6 +236,7 @@ Must:
 - define a lightweight review rubric and proof path for day-to-day work
 - keep the same readiness rubric and proof path across before and after snapshots
 - preserve enough evidence to justify the score
+- preserve enough evidence that another agent can continue the work without re-discovery
 
 Should:
 
@@ -248,3 +255,4 @@ Anti-patterns:
 - Prefer a few high-value artifacts over documentation sprawl.
 - Do not treat "more documentation" as improvement by default.
 - Measure the before state before claiming the transformation helped.
+- When several agents may work in parallel, prefer visible ownership, handoff, and shared proof surfaces over private scratch context.

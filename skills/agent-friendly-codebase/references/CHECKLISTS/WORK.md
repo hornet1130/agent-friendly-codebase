@@ -6,6 +6,7 @@ Use this when transforming a work area.
 - [ ] Identify the entrypoints.
 - [ ] Capture the key dependencies and reverse dependencies.
 - [ ] Identify the public contracts and external boundaries.
+- [ ] Identify ownership lanes, handoff points, or conflict hotspots when more than one agent may touch the area.
 - [ ] Capture search seeds or starting files for future exploration.
 - [ ] Confirm the proof path and area-scoped validation command.
 - [ ] Capture or reuse a before review snapshot.

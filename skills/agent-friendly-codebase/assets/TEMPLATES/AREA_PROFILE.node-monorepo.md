@@ -4,7 +4,7 @@
 
 - Area ID:
 - Human name:
-- Primary paths:
+- Primary paths: `apps/...` or `packages/...`
 - Non-goals / out of scope:
 
 ## 2. Why this area matters
@@ -12,6 +12,7 @@
 - Business purpose:
 - Typical requests received in this area:
 - Why this area is a good benchmark target:
+- Why several agents might need to collaborate here:
 
 ## 3. Entrypoints
 
@@ -37,7 +38,7 @@
 
 ## 6. Canonical commands
 
-- install:
+- install: `pnpm install`
 - build:
 - lint:
 - test:
@@ -59,31 +60,38 @@
 - Supporting files:
 - Dangerous shared files:
 
-## 9. Exploration hints
+## 9. Ownership and handoffs
+
+- Owning team or lane:
+- Parallel-work hotspots:
+- Common handoff boundaries:
+- Shared state or notes to update:
+
+## 10. Exploration hints
 
 - Fastest starting files:
 - High-signal symbols / grep seeds:
 - Directory focus order:
 
-## 10. Verification
+## 11. Verification
 
 - Fastest proof command:
 - Full proof command:
 - Known flaky tests:
 - Manual checks still required:
 
-## 11. Known failure patterns
+## 12. Known failure patterns
 
 - Pattern 1:
 - Pattern 2:
 - Pattern 3:
 
-## 12. Golden path examples
+## 13. Golden path examples
 
 - Example PR / commit / file path 1:
 - Example PR / commit / file path 2:
 
-## 13. Current AI-readiness gaps
+## 14. Current agent-readiness gaps
 
 - Gap 1:
 - Gap 2:

@@ -4,7 +4,7 @@
 
 - Area ID:
 - Human name:
-- Primary paths: `apps/...` or `packages/...`
+- Primary paths: `internal/...`, `pkg/...`, or `cmd/...`
 - Non-goals / out of scope:
 
 ## 2. Why this area matters
@@ -12,13 +12,13 @@
 - Business purpose:
 - Typical requests received in this area:
 - Why this area is a good benchmark target:
+- Why several agents might need to collaborate here:
 
 ## 3. Entrypoints
 
 - User entrypoints:
 - HTTP/API entrypoints:
 - Job/queue entrypoints:
-- UI route/page entrypoints:
 - CLI/script entrypoints:
 
 ## 4. Dependency map
@@ -30,27 +30,26 @@
 ## 5. Key contracts
 
 - Public API / route:
-- DTO / schema / zod / class-validator:
-- Shared package contracts:
+- Request / response structs:
+- Interfaces / ports:
 - External services:
-- Required env vars:
+- Required env vars / config structs:
 
 ## 6. Canonical commands
 
-- install: `pnpm install`
-- build:
+- install: `go mod download`
+- build: `go build ./...`
 - lint:
-- test:
+- test: `go test ./...`
 - test (area-only):
 - dev:
-- e2e:
 
 ## 7. Typical change types
 
 - Bug fix:
 - Feature add:
 - Refactor:
-- Validation / schema change:
+- Validation / contract change:
 - Test hardening:
 
 ## 8. Common files touched
@@ -59,31 +58,38 @@
 - Supporting files:
 - Dangerous shared files:
 
-## 9. Exploration hints
+## 9. Ownership and handoffs
 
-- Fastest starting files:
+- Owning team or lane:
+- Parallel-work hotspots:
+- Common handoff boundaries:
+- Shared state or notes to update:
+
+## 10. Exploration hints
+
+- Fastest starting packages:
 - High-signal symbols / grep seeds:
-- Directory focus order:
+- Package focus order:
 
-## 10. Verification
+## 11. Verification
 
 - Fastest proof command:
 - Full proof command:
 - Known flaky tests:
 - Manual checks still required:
 
-## 11. Known failure patterns
+## 12. Known failure patterns
 
 - Pattern 1:
 - Pattern 2:
 - Pattern 3:
 
-## 12. Golden path examples
+## 13. Golden path examples
 
 - Example PR / commit / file path 1:
 - Example PR / commit / file path 2:
 
-## 13. Current AI-readiness gaps
+## 14. Current agent-readiness gaps
 
 - Gap 1:
 - Gap 2:

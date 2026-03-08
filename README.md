@@ -1,11 +1,11 @@
-# codebase-for-ai
+# agent-friendly-codebase
 
-`codebase-for-ai` is a `skills.sh` skill for making a bounded work area easier for AI agents to review, change, and verify.
+`agent-friendly-codebase` is a `skills.sh` skill for making a bounded work area easier for agents to review, change, verify, and hand off.
 
 ## Install
 
 ```bash
-npx skills add https://github.com/hornet1130/codebase-for-ai
+npx skills add https://github.com/hornet1130/agent-friendly-codebase
 ```
 
 ## When to Use
@@ -14,18 +14,19 @@ Use this skill when you want an agent to work on a codebase more like a good tea
 
 It is designed for two practical workflows:
 
-- `review`: inspect a bounded work area, score its current readiness, and surface the biggest AI-friction points
-- `transform`: improve a bounded work area, run the proof path, and report the before/after delta
+- `review`: inspect a bounded work area, score its current readiness, and surface the biggest agent-friction points
+- `transform`: improve a bounded work area, run the proof path, and summarize what improved for both direct work and future handoffs
 
 ## How to Ask
 
 Good requests are concrete about the area and the proof path. For example:
 
-- `Use codebase-for-ai to review apps/api/src/modules/auth`
-- `Use codebase-for-ai to review the checkout area and show the biggest AI-friction points`
-- `Use codebase-for-ai to transform packages/shared/http-client so an AI agent can ship bug fixes with less context hunting`
-- `Use codebase-for-ai to transform apps/web/src/features/checkout and use pnpm test --filter checkout as the proof command`
-- `Use codebase-for-ai on this repo, but keep the result chat-only unless I ask you to persist files`
+- `Use agent-friendly-codebase to review apps/api/src/modules/auth`
+- `Use agent-friendly-codebase to review the checkout area and show the biggest agent-friction points`
+- `Use agent-friendly-codebase to transform packages/shared/http-client so an agent can ship bug fixes with less context hunting`
+- `Use agent-friendly-codebase to transform apps/web/src/features/checkout and use pnpm test --filter checkout as the proof command`
+- `Use agent-friendly-codebase on this repo, but keep the result chat-only unless I ask you to persist files`
+- `Use agent-friendly-codebase to make the auth module easier for multiple agents to split and hand off safely`
 
 ## What You Get
 
@@ -34,11 +35,21 @@ Depending on the request, the skill produces some combination of:
 - work-area boundaries and entrypoints
 - canonical commands and validation paths
 - contract and blast-radius mapping
-- before or review snapshot scoring
+- current-state or review snapshot scoring
 - proof-oriented transformation plans
-- before vs after comparisons for the transformed area
+- improvement summaries for the transformed area
+- ownership, handoff, and collision-risk notes when multiple agents are relevant
 
 By default, the result is returned in chat. It only writes files when the user explicitly asks for persisted artifacts.
+
+## Security Posture
+
+This package ships plain text guidance and small local helper scripts.
+
+- no external downloads
+- no install hooks
+- no credential collection
+- chat-only by default, with saved files only on explicit request
 
 ## How It Was Built
 
@@ -53,9 +64,9 @@ The current package was shaped through that sequence: packaging cleanup, smoke v
 
 ## Philosophy
 
-This skill treats AI-friendliness as an operational property, not a vibe.
+This skill treats agent-friendliness as an operational property, not a vibe.
 
-Think of a codebase like a workshop for an agent. A good workshop has labeled drawers, calibrated gauges, and a test jig near the bench. An AI-friendly work area should feel the same way: clear boundaries, visible contracts, short paths to the right files, and a deterministic way to check whether the work is actually done.
+Think of a codebase like a workshop for an agent. A good workshop has labeled drawers, calibrated gauges, and a test jig near the bench. An agent-friendly work area should feel the same way: clear boundaries, visible contracts, short paths to the right files, a deterministic way to check whether the work is actually done, and low-friction handoffs when more than one agent is involved.
 
 The bias is toward small executable proofs over long prose. More documentation is not automatically better. The goal is to give the agent the fewest high-value artifacts that make navigation, change, and verification reliable.
 
@@ -71,7 +82,7 @@ That is the design here as well. The always-loaded part stays small, and the hea
 
 ```text
 skills/
-  codebase-for-ai/
+  agent-friendly-codebase/
     SKILL.md
     agents/openai.yaml
     references/
@@ -81,7 +92,7 @@ skills/
 
 ## Maintainer Notes
 
-- Packaging and validation workflow: `skills/codebase-for-ai/references/MAINTENANCE.md`
-- Scoring model and qualitative bands: `skills/codebase-for-ai/references/EVALUATION.md`
+- Packaging and validation workflow: `skills/agent-friendly-codebase/references/MAINTENANCE.md`
+- Scoring model and qualitative bands: `skills/agent-friendly-codebase/references/EVALUATION.md`
 
 Only deployable skill files are tracked in this repository.

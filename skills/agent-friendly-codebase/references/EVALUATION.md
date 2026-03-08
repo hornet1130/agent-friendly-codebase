@@ -9,7 +9,7 @@ The current package uses a **readiness snapshot** model only.
 Use these default workflows:
 
 - `review` -> readiness snapshot
-- `transform` -> before snapshot, change, proof, after snapshot, delta
+- `transform` -> current-state summary, change, proof, post-change summary, delta
 
 Do not invent a heavier protocol unless the user explicitly asks for one and is willing to define it outside this package.
 
@@ -21,6 +21,7 @@ When comparing before and after states, keep these fixed:
 - the same readiness rubric
 - the same proof path
 - the same agent or model family
+- the same coordination scope or handoff assumptions
 - the same tool permissions
 - the same evidence standard
 
@@ -32,7 +33,7 @@ The snapshot score is `ACRS`:
 
 `ACRS = S1 + S2 + S3 + S4 + S5`
 
-- `ACRS`: AI Codebase Readiness Score, `0..40`
+- `ACRS`: Agent Codebase Readiness Score, `0..40`
 
 Three-level summary band:
 
@@ -66,6 +67,7 @@ Evidence to look for:
 - entrypoints are explicit
 - important dependencies and reverse dependencies are visible
 - there is a clear starting point for exploration
+- ownership lanes or starting points for a second agent are visible when relevant
 
 Anchor interpretation:
 
@@ -81,6 +83,7 @@ Evidence to look for:
 - at least one area-scoped proof or validation command exists
 - common failure causes are documented briefly
 - env vars, seeds, fixtures, or setup entrypoints are visible
+- the proof path is shareable across agents without private setup knowledge
 
 Anchor interpretation:
 
@@ -96,6 +99,7 @@ Evidence to look for:
 - DTOs, schemas, and type boundaries are easy to find
 - external integrations are visible
 - likely impact radius is predictable
+- handoff surfaces, ownership boundaries, or conflict hotspots are visible when relevant
 
 Anchor interpretation:
 
@@ -126,6 +130,7 @@ Evidence to look for:
 - automated verification exists
 - known failures or debug notes are captured
 - there is an explicit place to store learned patterns
+- another agent can continue the area with minimal re-discovery
 
 Anchor interpretation:
 
@@ -144,6 +149,7 @@ Report:
 - summary band
 - biggest gaps
 - recommended proof path
+- handoff or collision risks when relevant
 
 ### `transform`
 
@@ -153,6 +159,7 @@ Report:
 - proof results after the change
 - after `ACRS`
 - absolute delta
+- coordination or handoff improvements when relevant
 - remaining risks
 
 ## Evidence minimum
@@ -164,6 +171,7 @@ Every scored result should include:
 - the evidence references used for scoring
 - the evidence behind each sub-score
 - any missing evidence or ambiguity
+- any coordination assumptions when several agents are relevant
 
 Do not claim a transformation helped unless the before and after scores use the same rubric and proof path.
 
@@ -177,6 +185,7 @@ Do not claim a transformation helped unless the before and after scores use the 
   - `proof_path`
   - `evidence_refs`
   - `ambiguities` as an optional list of strings
+  - `coordination_scope` as an optional string such as `single-agent` or `multi-agent`
 - `readiness` as an object containing:
   - `boundary_entrypoints`
   - `commands_env`
@@ -203,6 +212,7 @@ Minimal example:
       "apps/web/src/features/checkout/index.ts",
       "apps/web/src/features/checkout/README.md"
     ],
+    "coordination_scope": "multi-agent",
     "ambiguities": []
   },
   "readiness": {
@@ -214,7 +224,7 @@ Minimal example:
   },
   "justification": {
     "boundary_entrypoints": {
-      "reason": "Primary paths and entrypoints are visible, but reverse dependencies are only partly documented.",
+      "reason": "Primary paths and entrypoints are visible, but reverse dependencies and handoff boundaries are only partly documented.",
       "evidence_refs": [
         "apps/web/src/features/checkout/index.ts",
         "apps/web/src/features/checkout/README.md"

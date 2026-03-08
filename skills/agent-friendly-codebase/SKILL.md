@@ -1,6 +1,6 @@
 ---
-name: codebase-for-ai
-description: Review and transform a bounded repository work area so AI agents can find the right files faster, make smaller safer changes, and verify the result with less human help. Use when the task is to inspect an area for AI-friction or improve it with a proof-oriented before/after workflow.
+name: agent-friendly-codebase
+description: Review and transform a bounded repository work area so agents can find the right files faster, make smaller safer changes, verify the result with less human help, and hand off work with low ambiguity. Use when the task is to inspect an area for agent-friction or improve it with a proof-backed workflow.
 disable-model-invocation: true
 ---
 
@@ -22,6 +22,7 @@ A work area is a bounded unit of work defined by:
 - public contracts
 - commands used to build, run, and validate it
 - typical change types
+- ownership or handoff cues when more than one agent may touch it
 
 If the user names only a path, infer the smallest reasonable work area around it.
 
@@ -33,6 +34,9 @@ Infer these unless asking is necessary:
 - goal: `review` or `transform`
 - proof command or trusted validation path
 - persistence target: default to chat-only
+- coordination assumptions when multi-agent work is explicit or obvious
+
+If the user explicitly asks to save outputs as files, use the standard saved-output paths documented in `references/MAINTENANCE.md`.
 
 ## Read path
 
@@ -42,7 +46,7 @@ Read in this order:
 2. `references/EVALUATION.md` through the default workflow sections
 3. the relevant checklist under `references/CHECKLISTS/`
 4. `AREAS/<area>/PROFILE.md` if present
-5. existing profiles, reports, and metrics for that area
+5. existing area notes and saved results for that area
 
 If the repository stack is obvious, read only the smallest matching overlay:
 
@@ -62,21 +66,23 @@ Produce:
 - key entrypoints, contracts, and search starting points
 - canonical command and proof path summary
 - readiness snapshot score
-- top AI-friction gaps
+- top agent-friction gaps
+- handoff points, ownership lanes, and collision risks when relevant
 - smallest useful next improvements
 
-The default `review` result is a lightweight before snapshot.
+The default `review` result is a lightweight current-state summary.
 
 ### `transform`
 
 Produce:
 
 - the scoped area and agreed proof path
-- a before snapshot, unless a still-valid review result can be reused
+- a current-state summary, unless a still-valid review result can be reused
 - the smallest changes that improve the target area
 - proof results
-- an after snapshot
-- before vs after delta
+- a post-change summary
+- what improved
+- handoff and shared-proof improvements when relevant
 - remaining risks
 
 Prefer the smallest high-value diff over broad cleanups.
@@ -87,29 +93,18 @@ Prefer the smallest high-value diff over broad cleanups.
 
 1. bound the area
 2. map entrypoints, contracts, and commands
-3. score the current readiness snapshot
-4. report the biggest gaps and next actions
+3. map ownership lanes, handoff points, or conflict hotspots when multi-agent work is likely
+4. score the current readiness snapshot
+5. report the biggest gaps and next actions
 
 ### `transform`
 
 1. confirm the area, goal, and proof path
-2. reuse a recent valid review when possible, otherwise create a before snapshot
+2. reuse a recent valid review when possible, otherwise create a current-state summary
 3. apply the smallest useful changes
 4. run the proof path
-5. create an after snapshot
-6. report the delta and remaining risks
-
-## Persisted outputs
-
-Only write files when the user asks. Default paths:
-
-- `AREAS/<area>/PROFILE.md`
-- `AREAS/<area>/reports/review.md`
-- `AREAS/<area>/reports/before.md`
-- `AREAS/<area>/reports/after.md`
-- `AREAS/<area>/metrics/review.json`
-- `AREAS/<area>/metrics/before.json`
-- `AREAS/<area>/metrics/after.json`
+5. create a post-change summary
+6. report what improved, how future handoffs changed, and any remaining risks
 
 ## Guardrails
 
@@ -117,6 +112,7 @@ Only write files when the user asks. Default paths:
 - Keep always-loaded guidance short and push detail into supporting files.
 - Prefer area-scoped guidance over repo-wide blanket rules.
 - Prefer executable verification over narrative claims.
+- When multi-agent work matters, prefer artifacts that reduce handoff ambiguity and conflict hotspots.
 - Never claim a transformation is safe unless the named proof path and regression checks were run, or you state that safety is unproven.
 
 ## Maintenance notes

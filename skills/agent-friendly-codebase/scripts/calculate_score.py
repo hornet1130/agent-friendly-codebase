@@ -99,7 +99,7 @@ def readiness_band(acrs: float) -> dict[str, str]:
     if acrs >= 32:
         return {
             "label": "good",
-            "description": "AI-friendly on static readiness",
+            "description": "agent-friendly on static readiness",
         }
     if acrs >= 24:
         return {
@@ -108,7 +108,7 @@ def readiness_band(acrs: float) -> dict[str, str]:
         }
     return {
         "label": "bad",
-        "description": "not yet AI-friendly on static readiness",
+        "description": "not yet agent-friendly on static readiness",
     }
 
 
@@ -131,6 +131,7 @@ def compute_scores(data: dict[str, Any]) -> dict[str, Any]:
             "proof_path": context["proof_path"],
             "evidence_refs": list(context["evidence_refs"]),
             "ambiguities": list(context.get("ambiguities", [])),
+            "coordination_scope": context.get("coordination_scope"),
         },
         "justification": {
             key: {
@@ -161,6 +162,8 @@ def print_report(scores: dict[str, Any]) -> None:
     print(f"Readiness band: {band['label']}")
     print(f"Readiness summary: {band['description']}")
     print(f"Evidence refs: {len(context['evidence_refs'])}")
+    if context.get("coordination_scope"):
+        print(f"Coordination scope: {context['coordination_scope']}")
     if context["ambiguities"]:
         print(f"Ambiguities: {len(context['ambiguities'])}")
     print("\nReadiness breakdown:")
@@ -190,6 +193,8 @@ def build_markdown_report(scores: dict[str, Any]) -> str:
         "### Readiness breakdown",
         "",
     ]
+    if context.get("coordination_scope"):
+        lines.insert(8, f"- Coordination scope: {context['coordination_scope']}")
     if context["ambiguities"]:
         lines.extend(["### Ambiguities", ""])
         for item in context["ambiguities"]:

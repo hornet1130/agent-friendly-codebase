@@ -1,4 +1,0 @@
-interface:
-  display_name: "Codebase For AI"
-  short_description: "Review and transform AI-friendly work areas"
-  default_prompt: "Use $codebase-for-ai to review or transform a bounded work area for AI-agent friendliness."

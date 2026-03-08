@@ -1,10 +1,10 @@
 # MAINTENANCE.md
 
-Read this file only when you are validating, publishing, or debugging the `codebase-for-ai` skill package itself.
+Read this file only when you are validating, publishing, or debugging the `agent-friendly-codebase` skill package itself.
 
 ## Skill-package boundary
 
-Treat `skills/codebase-for-ai/` as the bounded work area when maintaining this skill itself.
+Treat `skills/agent-friendly-codebase/` as the bounded work area when maintaining this skill itself.
 
 - primary paths: `SKILL.md`, `references/`, `scripts/`, `agents/openai.yaml`
 - entrypoints: `SKILL.md`, `scripts/smoke_test.sh`, `scripts/package_check.sh`
@@ -18,11 +18,11 @@ Run commands from the repository root.
 | Need | Command | When to use it |
 |---|---|---|
 | install | `N/A` | This package ships plain files and helper scripts. No install step is required beyond having `python3` and `sh`. |
-| build | `python3 -m py_compile skills/codebase-for-ai/scripts/calculate_score.py` | Fast syntax proof after score-script edits. |
-| test | `sh skills/codebase-for-ai/scripts/smoke_test.sh` | Fastest trusted area-scoped proof for readiness-score formatting. |
+| build | `python3 -m py_compile skills/agent-friendly-codebase/scripts/calculate_score.py` | Fast syntax proof after score-script edits. |
+| test | `sh skills/agent-friendly-codebase/scripts/smoke_test.sh` | Fastest trusted area-scoped proof for readiness-score formatting. |
 | lint | `N/A` | No dedicated linter is bundled. Use `py_compile` plus the shell checks as the canonical validation path. |
 | dev | `N/A` | This skill package has no long-running dev server. |
-| regression | `sh skills/codebase-for-ai/scripts/package_check.sh` | Broader package regression after docs, metadata, templates, or validation-path changes. |
+| regression | `sh skills/agent-friendly-codebase/scripts/package_check.sh` | Broader package regression after docs, metadata, templates, or validation-path changes. |
 
 Use the `test` row before the `regression` row when both apply.
 
@@ -33,7 +33,7 @@ Treat these files as the source of truth for the package contracts.
 | Contract surface | Source of truth | Checked by |
 |---|---|---|
 | workflow and readiness score model | `SKILL.md`, `references/EVALUATION.md`, `scripts/calculate_score.py` | `python3 -m py_compile ...`, `sh scripts/smoke_test.sh` |
-| persisted artifact paths | `SKILL.md`, `assets/TEMPLATES/AREA_PROFILE.md`, `assets/TEMPLATES/EVALUATION_REPORT.md` | `sh scripts/package_check.sh` |
+| saved output paths | `references/MAINTENANCE.md`, `assets/TEMPLATES/AREA_PROFILE.md`, `assets/TEMPLATES/EVALUATION_REPORT.md` | `sh scripts/package_check.sh` |
 | package identity and install surface | `README.md`, `SKILL.md`, `agents/openai.yaml` | `sh scripts/package_check.sh` |
 | package validation paths | `references/MAINTENANCE.md`, `scripts/smoke_test.sh`, `scripts/package_check.sh` | `sh scripts/package_check.sh` |
 
@@ -42,19 +42,33 @@ Treat these files as the source of truth for the package contracts.
 Keep the package contract split sharp:
 
 - `README.md`: install, when to use, request examples, and top-level maintainer links
-- `SKILL.md`: runtime contract, read path, output contract, workflow, and persisted output paths
+- `SKILL.md`: runtime contract, read path, output contract, and workflow
 - `references/EVALUATION.md`: readiness rubric, scoring anchors, evidence minimum, and metrics schema
-- `references/MAINTENANCE.md`: validation, packaging, drift debugging, and document ownership
+- `references/MAINTENANCE.md`: validation, packaging, saved output paths, drift debugging, and document ownership
 
 If a change adds the same contract detail to multiple documents, prefer one source of truth and replace the rest with short links.
+
+## Saved output paths
+
+Default to chat-only. Only write files when the user explicitly asks.
+
+When saved outputs are requested, keep them under `AREAS/<area>/`. Typical files are:
+
+- `AREAS/<area>/PROFILE.md`
+- `AREAS/<area>/reports/review.md`
+- `AREAS/<area>/reports/before.md`
+- `AREAS/<area>/reports/after.md`
+- `AREAS/<area>/metrics/review.json`
+- `AREAS/<area>/metrics/before.json`
+- `AREAS/<area>/metrics/after.json`
 
 ## Canonical smoke test
 
 Run these commands from the repository root:
 
 ```bash
-python3 -m py_compile skills/codebase-for-ai/scripts/calculate_score.py
-sh skills/codebase-for-ai/scripts/smoke_test.sh
+python3 -m py_compile skills/agent-friendly-codebase/scripts/calculate_score.py
+sh skills/agent-friendly-codebase/scripts/smoke_test.sh
 ```
 
 Expected result:
@@ -68,9 +82,9 @@ Expected result:
 Run these commands from the repository root:
 
 ```bash
-python3 -m py_compile skills/codebase-for-ai/scripts/calculate_score.py
-sh skills/codebase-for-ai/scripts/smoke_test.sh
-sh skills/codebase-for-ai/scripts/package_check.sh
+python3 -m py_compile skills/agent-friendly-codebase/scripts/calculate_score.py
+sh skills/agent-friendly-codebase/scripts/smoke_test.sh
+sh skills/agent-friendly-codebase/scripts/package_check.sh
 ```
 
 Expected result:
@@ -97,11 +111,11 @@ The bundled smoke test creates this minimal readiness input:
 {
   "label": "smoke-test",
   "context": {
-    "area": "skills/codebase-for-ai",
-    "proof_path": "sh skills/codebase-for-ai/scripts/smoke_test.sh",
+    "area": "skills/agent-friendly-codebase",
+    "proof_path": "sh skills/agent-friendly-codebase/scripts/smoke_test.sh",
     "evidence_refs": [
-      "skills/codebase-for-ai/scripts/smoke_test.sh",
-      "skills/codebase-for-ai/scripts/calculate_score.py"
+      "skills/agent-friendly-codebase/scripts/smoke_test.sh",
+      "skills/agent-friendly-codebase/scripts/calculate_score.py"
     ],
     "ambiguities": []
   },
@@ -116,36 +130,36 @@ The bundled smoke test creates this minimal readiness input:
     "boundary_entrypoints": {
       "reason": "The skill package boundary and entrypoints are explicit in the maintainer docs.",
       "evidence_refs": [
-        "skills/codebase-for-ai/references/MAINTENANCE.md",
-        "skills/codebase-for-ai/SKILL.md"
+        "skills/agent-friendly-codebase/references/MAINTENANCE.md",
+        "skills/agent-friendly-codebase/SKILL.md"
       ]
     },
     "commands_env": {
       "reason": "The package has clear smoke and package validation commands.",
       "evidence_refs": [
-        "skills/codebase-for-ai/references/MAINTENANCE.md",
-        "skills/codebase-for-ai/scripts/smoke_test.sh"
+        "skills/agent-friendly-codebase/references/MAINTENANCE.md",
+        "skills/agent-friendly-codebase/scripts/smoke_test.sh"
       ]
     },
     "contracts": {
       "reason": "The score model and workflow are visible in the public and maintainer docs.",
       "evidence_refs": [
-        "skills/codebase-for-ai/references/EVALUATION.md",
-        "skills/codebase-for-ai/SKILL.md"
+        "skills/agent-friendly-codebase/references/EVALUATION.md",
+        "skills/agent-friendly-codebase/SKILL.md"
       ]
     },
     "context_hierarchy": {
       "reason": "The package keeps public workflow guidance separate from maintenance guidance.",
       "evidence_refs": [
-        "skills/codebase-for-ai/SKILL.md",
-        "skills/codebase-for-ai/references/MAINTENANCE.md"
+        "skills/agent-friendly-codebase/SKILL.md",
+        "skills/agent-friendly-codebase/references/MAINTENANCE.md"
       ]
     },
     "examples_persistence": {
       "reason": "Smoke validation exists and the maintainer guide stores recurring package knowledge.",
       "evidence_refs": [
-        "skills/codebase-for-ai/scripts/smoke_test.sh",
-        "skills/codebase-for-ai/references/MAINTENANCE.md"
+        "skills/agent-friendly-codebase/scripts/smoke_test.sh",
+        "skills/agent-friendly-codebase/references/MAINTENANCE.md"
       ]
     }
   }

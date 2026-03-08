@@ -21,13 +21,14 @@ cat >"$tmpdir/smoke-test.json" <<'EOF'
 {
   "label": "smoke-test",
   "context": {
-    "area": "skills/codebase-for-ai",
-    "proof_path": "sh skills/codebase-for-ai/scripts/smoke_test.sh",
+    "area": "skills/agent-friendly-codebase",
+    "proof_path": "sh skills/agent-friendly-codebase/scripts/smoke_test.sh",
     "evidence_refs": [
-      "skills/codebase-for-ai/scripts/smoke_test.sh",
-      "skills/codebase-for-ai/scripts/calculate_score.py"
+      "skills/agent-friendly-codebase/scripts/smoke_test.sh",
+      "skills/agent-friendly-codebase/scripts/calculate_score.py"
     ],
-    "ambiguities": []
+    "ambiguities": [],
+    "coordination_scope": "multi-agent"
   },
   "readiness": {
     "boundary_entrypoints": 6,
@@ -40,36 +41,36 @@ cat >"$tmpdir/smoke-test.json" <<'EOF'
     "boundary_entrypoints": {
       "reason": "The skill package boundary and entrypoints are explicit in the maintainer docs.",
       "evidence_refs": [
-        "skills/codebase-for-ai/references/MAINTENANCE.md",
-        "skills/codebase-for-ai/SKILL.md"
+        "skills/agent-friendly-codebase/references/MAINTENANCE.md",
+        "skills/agent-friendly-codebase/SKILL.md"
       ]
     },
     "commands_env": {
       "reason": "The package has clear smoke and package validation commands.",
       "evidence_refs": [
-        "skills/codebase-for-ai/references/MAINTENANCE.md",
-        "skills/codebase-for-ai/scripts/smoke_test.sh"
+        "skills/agent-friendly-codebase/references/MAINTENANCE.md",
+        "skills/agent-friendly-codebase/scripts/smoke_test.sh"
       ]
     },
     "contracts": {
-      "reason": "The score model and workflow are visible in the public and maintainer docs.",
+      "reason": "The score model, workflow, and handoff-safe defaults are visible in the public and maintainer docs.",
       "evidence_refs": [
-        "skills/codebase-for-ai/references/EVALUATION.md",
-        "skills/codebase-for-ai/SKILL.md"
+        "skills/agent-friendly-codebase/references/EVALUATION.md",
+        "skills/agent-friendly-codebase/SKILL.md"
       ]
     },
     "context_hierarchy": {
       "reason": "The package keeps public workflow guidance separate from maintenance guidance.",
       "evidence_refs": [
-        "skills/codebase-for-ai/SKILL.md",
-        "skills/codebase-for-ai/references/MAINTENANCE.md"
+        "skills/agent-friendly-codebase/SKILL.md",
+        "skills/agent-friendly-codebase/references/MAINTENANCE.md"
       ]
     },
     "examples_persistence": {
-      "reason": "Smoke validation exists and the maintainer guide stores recurring package knowledge.",
+      "reason": "Smoke validation exists and the maintainer guide stores recurring package knowledge for future agents.",
       "evidence_refs": [
-        "skills/codebase-for-ai/scripts/smoke_test.sh",
-        "skills/codebase-for-ai/references/MAINTENANCE.md"
+        "skills/agent-friendly-codebase/scripts/smoke_test.sh",
+        "skills/agent-friendly-codebase/references/MAINTENANCE.md"
       ]
     }
   }
@@ -79,7 +80,8 @@ EOF
 output="$(python3 "$script_dir/calculate_score.py" "$tmpdir/smoke-test.json")"
 printf '%s\n' "$output"
 
-printf '%s\n' "$output" | grep -q "Area: skills/codebase-for-ai"
+printf '%s\n' "$output" | grep -q "Area: skills/agent-friendly-codebase"
 printf '%s\n' "$output" | grep -q "ACRS: 28/40"
 printf '%s\n' "$output" | grep -q "Readiness band: so-so"
+printf '%s\n' "$output" | grep -q "Coordination scope: multi-agent"
 printf '%s\n' "$output" | grep -q "Justification summary:"

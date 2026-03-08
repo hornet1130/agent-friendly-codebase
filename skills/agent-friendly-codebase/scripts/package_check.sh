@@ -4,7 +4,7 @@ set -euo pipefail
 script_dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 repo_root="$(CDPATH= cd -- "$script_dir/../../.." && pwd)"
 
-skill_dir="$repo_root/skills/codebase-for-ai"
+skill_dir="$repo_root/skills/agent-friendly-codebase"
 skill="$skill_dir/SKILL.md"
 readme="$repo_root/README.md"
 metadata="$skill_dir/agents/openai.yaml"
@@ -33,19 +33,19 @@ grep -q 'references/MAINTENANCE.md' "$skill"
 grep -q 'references/EVALUATION.md' "$skill"
 grep -q '^## Output contract$' "$skill"
 grep -q '^## Workflow$' "$skill"
-grep -q '^## Persisted outputs$' "$skill"
 grep -q '^## Command matrix$' "$maintenance"
 grep -q '^## Contract surface map$' "$maintenance"
 grep -q '^## Document ownership$' "$maintenance"
+grep -q '^## Saved output paths$' "$maintenance"
 grep -q '^## Exploration starting points$' "$maintenance"
-grep -q 'skills/codebase-for-ai/references/MAINTENANCE.md' "$readme"
-grep -q 'skills/codebase-for-ai/references/EVALUATION.md' "$readme"
+grep -q 'skills/agent-friendly-codebase/references/MAINTENANCE.md' "$readme"
+grep -q 'skills/agent-friendly-codebase/references/EVALUATION.md' "$readme"
 grep -q '^## Install$' "$readme"
 grep -q '^## How to Ask$' "$readme"
 grep -q '^## Maintainer Notes$' "$readme"
 grep -q 'scripts/' "$readme"
 grep -q 'display_name:' "$metadata"
-grep -q 'codebase-for-ai' "$metadata"
+grep -q 'agent-friendly-codebase' "$metadata"
 
 for template in AREA_PROFILE.md EVALUATION_REPORT.md; do
   require_file "$skill_dir/assets/TEMPLATES/$template"
@@ -100,13 +100,23 @@ if grep -q 'boundary_entrypoints' "$readme"; then
   exit 1
 fi
 
+if grep -q '^## Persisted outputs$' "$skill"; then
+  echo "ownership drift: saved output paths belong in MAINTENANCE.md" >&2
+  exit 1
+fi
+
 if grep -q '^## Persisted outputs$' "$evaluation"; then
-  echo "ownership drift: persisted output paths belong in SKILL.md" >&2
+  echo "ownership drift: saved output paths belong in MAINTENANCE.md" >&2
   exit 1
 fi
 
 if grep -q '^## Command matrix$' "$evaluation"; then
   echo "ownership drift: command matrix belongs in MAINTENANCE.md" >&2
+  exit 1
+fi
+
+if grep -q 'codebase-for-ai' "$skill" || grep -q 'codebase-for-ai' "$readme"; then
+  echo "rename drift: old skill slug still present in public docs" >&2
   exit 1
 fi
 

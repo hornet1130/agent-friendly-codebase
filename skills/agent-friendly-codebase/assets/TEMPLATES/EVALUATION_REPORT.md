@@ -12,6 +12,7 @@
 
 Optional:
 - Agent/model:
+- Coordination scope: single-agent | multi-agent
 - Tool permissions:
 - Evaluator:
 - Raw evidence / log location:
@@ -23,6 +24,8 @@ Optional:
 - Strongest evidence:
 - Weakest evidence / ambiguity:
 - Before vs after delta:
+- Ownership lanes / handoff points:
+- Collision risks:
 - Search starting points:
 - Immediate next step:
 
