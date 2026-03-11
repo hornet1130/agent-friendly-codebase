@@ -1,4 +1,7 @@
-Description: Review and transform bounded work areas so agents can find files faster, make smaller safer changes, verify results with less human help, and hand off work with low ambiguity.
+---
+name: agent-friendly-codebase
+description: Make a codebase more AI-agent-friendly. Review and transform bounded work areas so agents can find files faster, make smaller safer changes, verify results with less human help, and hand off work with low ambiguity.
+---
 
 # Agent-Friendly Codebase
 
@@ -67,23 +70,23 @@ These are the Must-level rules from `references/RULE.md`. Read the full file for
 
 The snapshot score is `ACRS` (Agent Codebase Readiness Score): `S1 + S2 + S3 + S4 + S5`, range `0..20`.
 
-| Category | Evaluates |
-|---|---|
-| S1. Boundary & entrypoints | Are area boundary, entrypoints, and starting files explicit? |
-| S2. Commands & environment | Do canonical build/test/proof paths exist with low setup ambiguity? |
-| S3. Contracts & change surface | Are contract surfaces and blast radius explicit and traceable? |
-| S4. Context hierarchy & economy | Is guidance high-signal, layered, and low-duplication? |
-| S5. Examples, verification & persistence | Are examples, verification, and knowledge capture easy to find? |
+| Category                                 | Evaluates                                                           |
+| ---------------------------------------- | ------------------------------------------------------------------- |
+| S1. Boundary & entrypoints               | Are area boundary, entrypoints, and starting files explicit?        |
+| S2. Commands & environment               | Do canonical build/test/proof paths exist with low setup ambiguity? |
+| S3. Contracts & change surface           | Are contract surfaces and blast radius explicit and traceable?      |
+| S4. Context hierarchy & economy          | Is guidance high-signal, layered, and low-duplication?              |
+| S5. Examples, verification & persistence | Are examples, verification, and knowledge capture easy to find?     |
 
 Each category is scored `0-4`:
 
-| Score | Meaning |
-|---:|---|
-| 0 | absent — effectively unusable |
-| 1 | weak — mostly implicit |
-| 2 | partial — important gaps remain |
-| 3 | solid — works for normal tasks, moderate friction only |
-| 4 | explicit — current, low ambiguity |
+| Score | Meaning                                                |
+| ----: | ------------------------------------------------------ |
+|     0 | absent — effectively unusable                          |
+|     1 | weak — mostly implicit                                 |
+|     2 | partial — important gaps remain                        |
+|     3 | solid — works for normal tasks, moderate friction only |
+|     4 | explicit — current, low ambiguity                      |
 
 Bands: **good** `>=16`, **so-so** `10-15`, **bad** `<10`.
 
@@ -158,12 +161,12 @@ Otherwise default to single-agent scope.
 
 Read only when deeper detail is needed:
 
-| File | When to read |
-|---|---|
-| `references/RULE.md` | Full rule definitions with Should-level guidance and anti-patterns |
-| `references/EVALUATION.md` | Detailed scoring anchors, comparison conditions, consistency guidelines |
-| `references/CHECKLIST.md` | Step-by-step checklists for review and transform |
-| `references/node-monorepo.md` | Target is a JS/TS monorepo |
-| `references/go-service.md` | Target is a Go service |
-| `references/python-service.md` | Target is a Python service |
-| `references/MAINTENANCE.md` | Maintaining this skill package itself |
+| File                           | When to read                                                            |
+| ------------------------------ | ----------------------------------------------------------------------- |
+| `references/RULE.md`           | Full rule definitions with Should-level guidance and anti-patterns      |
+| `references/EVALUATION.md`     | Detailed scoring anchors, comparison conditions, consistency guidelines |
+| `references/CHECKLIST.md`      | Step-by-step checklists for review and transform                        |
+| `references/node-monorepo.md`  | Target is a JS/TS monorepo                                              |
+| `references/go-service.md`     | Target is a Go service                                                  |
+| `references/python-service.md` | Target is a Python service                                              |
+| `references/MAINTENANCE.md`    | Maintaining this skill package itself                                   |
