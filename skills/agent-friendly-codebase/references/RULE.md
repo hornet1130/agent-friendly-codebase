@@ -1,17 +1,17 @@
 # RULE.md
 
-This file defines what this package means by an agent-friendly codebase and what rules a transformed work area should satisfy.
+This file defines what this package means by an agent-friendly codebase and what rules a transformed work area should satisfy. For the condensed Must-level summary, see `SKILL.md` Core principles.
 
 ## Core definition
 
-An agent-friendly codebase is a structural combination of code, documentation, tooling, tests, and local guidance that lets one agent or several cooperating agents, under the same model, tools, time, and budget:
+An agent-friendly codebase is a structural combination of code, documentation, tooling, tests, and local guidance that lets an agent:
 
 - reach relevant context with low exploration cost
 - make bounded changes with a predictable blast radius
 - verify changes with a short trusted proof path
-- hand off or split work with low ambiguity and low conflict risk
+- hand off or split work with low ambiguity
 
-This package evaluates AI-friendliness at the **work area** level, not at the whole-repository level.
+This package evaluates at the **work area** level, not at the whole-repository level.
 
 A **work area** is a bounded unit of work defined by:
 
@@ -20,13 +20,8 @@ A **work area** is a bounded unit of work defined by:
 - visible external and internal contracts
 - canonical build, run, and validation commands
 - a lightweight review rubric and proof path
-- visible ownership, handoff, or collision surfaces when several agents may touch it
 
-Examples:
-
-- `apps/web/src/features/checkout`
-- `apps/api/src/modules/auth`
-- `packages/shared/http-client`
+Examples: `apps/web/src/features/checkout`, `apps/api/src/modules/auth`, `packages/shared/http-client`
 
 ## The rules
 
@@ -45,30 +40,19 @@ Should:
 - document the usual starting files
 - keep frequently edited files easy to find
 
-Anti-patterns:
-
-- domain logic scattered across unrelated folders
-- entrypoints known only through team convention
-
 ### R2. Contract visibility
 
 Purpose: let the agent predict impact by reading visible surfaces instead of folklore.
 
 Must:
 
-- expose the important public contracts such as routes, APIs, schemas, DTOs, or env dependencies
+- expose the important public contracts (routes, APIs, schemas, DTOs, env dependencies)
 - make external system boundaries visible through types or docs
-- make ownership lanes or handoff surfaces visible when several agents need the same area
 
 Should:
 
 - document failure modes and exception paths
 - include at least one concrete input/output example
-
-Anti-patterns:
-
-- key contracts existing only in review culture or chat history
-- DTOs and schemas scattered so changes are hard to trace
 
 ### R3. Standard commands
 
@@ -84,11 +68,6 @@ Should:
 - provide area-scoped validation commands
 - note common failure causes and short workarounds
 
-Anti-patterns:
-
-- every teammate remembers a different command
-- only whole-repo validation exists for small local changes
-
 ### R4. Verifiability
 
 Purpose: let the agent close the loop from "changed" to "verified".
@@ -103,11 +82,6 @@ Should:
 - keep fixtures, seeds, mocks, stories, or snapshots reusable
 - include enough regression coverage to catch obvious spillover
 
-Anti-patterns:
-
-- manual-only verification
-- flaky tests that prevent autonomous judgement
-
 ### R5. Change locality
 
 Purpose: keep representative work inside a bounded surface area.
@@ -116,17 +90,11 @@ Must:
 
 - make the common edit surface observable
 - explain when cross-boundary edits are required and why
-- make likely conflict hotspots visible when parallel work is expected
 
 Should:
 
 - expose the blast radius of shared package changes
 - avoid turning a small feature change into a repo-wide edit
-
-Anti-patterns:
-
-- simple changes touching controller, service, utils, shared package, config, and infra with no clear reason
-- circular dependencies
 
 ### R6. Context economy
 
@@ -142,15 +110,7 @@ Should:
 - keep root guidance minimal and common
 - place scoped guidance near the work area
 
-Reference budget:
-
-- root always-loaded guidance: roughly 100 to 200 lines
-- area-scoped always-loaded guidance: roughly 50 to 150 lines
-
-Anti-patterns:
-
-- one giant instruction file containing every exception
-- duplicated rules across several files that drift over time
+Reference budget: root ~100-200 lines, area ~50-150 lines.
 
 ### R7. Hierarchical guidance
 
@@ -166,11 +126,6 @@ Should:
 - follow a narrowing path such as `root -> app/service -> feature/package`
 - keep area-local skills or notes close to the code
 
-Anti-patterns:
-
-- only one global rules file for every subsystem
-- no place for domain-specific constraints
-
 ### R8. Golden-path examples
 
 Purpose: let the agent learn from living examples instead of abstract rules only.
@@ -181,13 +136,8 @@ Must:
 
 Should:
 
-- cover recurring tasks such as new endpoint, schema change, validation change, or page addition
+- cover recurring tasks (new endpoint, schema change, validation change, page addition)
 - point to a good diff, PR, or before/after example
-
-Anti-patterns:
-
-- rules without examples
-- examples that no longer match the codebase
 
 ### R9. Knowledge persistence
 
@@ -196,17 +146,11 @@ Purpose: keep learned patterns from disappearing between sessions.
 Must:
 
 - externalize recurring patterns, mistakes, and conventions into docs, skills, tests, ADRs, or similar artifacts
-- preserve handoff notes or shared coordination patterns when several agents benefit from them
 
 Should:
 
 - keep gotchas, known failures, and debug notes structured
 - define where new knowledge should be saved after work
-
-Anti-patterns:
-
-- repeating the same explanation every session
-- useful knowledge living only in chat transcripts
 
 ### R10. Observability and debug path
 
@@ -215,17 +159,11 @@ Purpose: make failures diagnosable instead of mysterious.
 Must:
 
 - identify the main logs, error paths, or state checkpoints for the area
-- keep shared debug starting points visible when one agent may need to continue another agent's investigation
 
 Should:
 
 - provide debug starting points for common failure scenarios
 - make env and config mismatches easy to check
-
-Anti-patterns:
-
-- errors exist but the failing layer is unclear
-- debug procedure exists only as tribal knowledge
 
 ### R11. Evaluation readiness
 
@@ -236,17 +174,22 @@ Must:
 - define a lightweight review rubric and proof path for day-to-day work
 - keep the same readiness rubric and proof path across before and after snapshots
 - preserve enough evidence to justify the score
-- preserve enough evidence that another agent can continue the work without re-discovery
 
 Should:
 
 - keep proof outputs or equivalent notes when changes matter
 - make before/after score deltas easy to explain from visible evidence
 
-Anti-patterns:
+## Multi-agent extensions
 
-- changing the proof path between before and after without saying so
-- scoring from intuition alone without evidence
+When several agents may work in parallel on the same area, extend the rules above:
+
+- **R1**: make ownership lanes or starting points for a second agent visible
+- **R2**: make handoff surfaces and ownership boundaries visible
+- **R5**: make likely conflict hotspots visible when parallel work is expected
+- **R9**: preserve handoff notes or shared coordination patterns
+- **R10**: keep shared debug starting points visible when one agent may continue another's investigation
+- **R11**: preserve enough evidence that another agent can continue without re-discovery
 
 ## Operating principles
 
@@ -255,4 +198,3 @@ Anti-patterns:
 - Prefer a few high-value artifacts over documentation sprawl.
 - Do not treat "more documentation" as improvement by default.
 - Measure the before state before claiming the transformation helped.
-- When several agents may work in parallel, prefer visible ownership, handoff, and shared proof surfaces over private scratch context.

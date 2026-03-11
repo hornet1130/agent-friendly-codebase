@@ -1,19 +1,8 @@
----
-name: agent-friendly-codebase
-description: Make a codebase more agent-friendly by reviewing and transforming bounded repository work areas so agents can find the right files faster, make smaller safer changes, verify the result with less human help, and hand off work with low ambiguity. Use when the task is to inspect an area for agent-friction or improve it with a proof-backed workflow.
-disable-model-invocation: true
----
+Description: Review and transform bounded work areas so agents can find files faster, make smaller safer changes, verify results with less human help, and hand off work with low ambiguity.
 
-# Purpose
+# Agent-Friendly Codebase
 
-Use this skill to make a codebase more agent-friendly by improving the bounded work areas that agents need to understand, change, verify, and hand off.
-
-Apply it on a **bounded work area** in one of two modes:
-
-1. `review`
-2. `transform`
-
-Keep this file thin. Read the rules, the default scoring path, the relevant checklist, and any area-local artifacts. Read templates only when the user asked to persist files.
+Apply on a **bounded work area** in one of two modes: `review` or `transform`.
 
 ## Work area
 
@@ -24,7 +13,6 @@ A work area is a bounded unit of work defined by:
 - public contracts
 - commands used to build, run, and validate it
 - typical change types
-- ownership or handoff cues when more than one agent may touch it
 
 If the user names only a path, infer the smallest reasonable work area around it.
 
@@ -35,28 +23,71 @@ Infer these unless asking is necessary:
 - target area identifier or path
 - goal: `review` or `transform`
 - proof command or trusted validation path
-- persistence target: default to chat-only
-- coordination assumptions when multi-agent work is explicit or obvious
 
-If the user explicitly asks to save outputs as files, use the standard saved-output paths documented in `references/MAINTENANCE.md`.
+## Core principles
 
-## Read path
+These are the Must-level rules from `references/RULE.md`. Read the full file for Should-level guidance and anti-patterns.
 
-Read in this order:
+### P1. Boundary & entrypoints
 
-1. `references/RULE.md`
-2. `references/EVALUATION.md` through the default workflow sections
-3. the relevant checklist under `references/CHECKLISTS/`
-4. `AREAS/<area>/PROFILE.md` if present
-5. existing area notes and saved results for that area
+- Name the primary paths for the area
+- Identify entrypoints
+- Identify important dependencies and reverse dependencies
 
-If the repository stack is obvious, read only the smallest matching overlay:
+### P2. Commands & environment
 
-- `references/node-monorepo.md`
-- `references/go-service.md`
-- `references/python-service.md`
+- Define canonical install, build, test, lint, and dev commands or clear equivalents
+- Keep those commands reproducible inside repository conventions
+- Provide at least one automated validation path
+- Cover representative task types with tests or repeatable repro steps
 
-Read `references/MAINTENANCE.md` only for packaging, smoke-test, or score-script maintenance on this skill itself.
+### P3. Contracts & change surface
+
+- Expose important public contracts (routes, APIs, schemas, DTOs, env dependencies)
+- Make external system boundaries visible through types or docs
+- Make the common edit surface observable
+- Explain when cross-boundary edits are required and why
+
+### P4. Context hierarchy & economy
+
+- Keep always-loaded rules short and high signal
+- Move detail, long examples, and domain explanations into supporting files
+- Distinguish repository-wide guidance from area-local guidance
+- Let more specific rules refine broader ones
+- Budget: root ~100-200 lines, area ~50-150 lines
+
+### P5. Examples, verification & persistence
+
+- Provide at least one canonical or recent example for a representative task type
+- Externalize recurring patterns, mistakes, and conventions into docs, skills, tests, or ADRs
+- Identify the main logs, error paths, or state checkpoints for the area
+- Define a lightweight review rubric and proof path for day-to-day work
+
+## Scoring model
+
+The snapshot score is `ACRS` (Agent Codebase Readiness Score): `S1 + S2 + S3 + S4 + S5`, range `0..20`.
+
+| Category | Evaluates |
+|---|---|
+| S1. Boundary & entrypoints | Are area boundary, entrypoints, and starting files explicit? |
+| S2. Commands & environment | Do canonical build/test/proof paths exist with low setup ambiguity? |
+| S3. Contracts & change surface | Are contract surfaces and blast radius explicit and traceable? |
+| S4. Context hierarchy & economy | Is guidance high-signal, layered, and low-duplication? |
+| S5. Examples, verification & persistence | Are examples, verification, and knowledge capture easy to find? |
+
+Each category is scored `0-4`:
+
+| Score | Meaning |
+|---:|---|
+| 0 | absent — effectively unusable |
+| 1 | weak — mostly implicit |
+| 2 | partial — important gaps remain |
+| 3 | solid — works for normal tasks, moderate friction only |
+| 4 | explicit — current, low ambiguity |
+
+Bands: **good** `>=16`, **so-so** `10-15`, **bad** `<10`.
+
+Read `references/EVALUATION.md` for detailed per-category anchor interpretations, fixed comparison conditions, and scoring consistency guidelines.
 
 ## Output contract
 
@@ -67,12 +98,9 @@ Produce:
 - area boundary summary
 - key entrypoints, contracts, and search starting points
 - canonical command and proof path summary
-- readiness snapshot score
+- ACRS readiness snapshot score with per-category breakdown
 - top agent-friction gaps
-- handoff points, ownership lanes, and collision risks when relevant
 - smallest useful next improvements
-
-The default `review` result is a lightweight current-state summary.
 
 ### `transform`
 
@@ -82,9 +110,8 @@ Produce:
 - a current-state summary, unless a still-valid review result can be reused
 - the smallest changes that improve the target area
 - proof results
-- a post-change summary
+- a post-change summary with ACRS score
 - what improved
-- handoff and shared-proof improvements when relevant
 - remaining risks
 
 Prefer the smallest high-value diff over broad cleanups.
@@ -93,29 +120,50 @@ Prefer the smallest high-value diff over broad cleanups.
 
 ### `review`
 
-1. bound the area
-2. map entrypoints, contracts, and commands
-3. map ownership lanes, handoff points, or conflict hotspots when multi-agent work is likely
-4. score the current readiness snapshot
-5. report the biggest gaps and next actions
+1. Bound the area
+2. Map entrypoints, contracts, and commands
+3. Score the current readiness snapshot (ACRS)
+4. Report the biggest gaps and next actions
 
 ### `transform`
 
-1. confirm the area, goal, and proof path
-2. reuse a recent valid review when possible, otherwise create a current-state summary
-3. apply the smallest useful changes
-4. run the proof path
-5. create a post-change summary
-6. report what improved, how future handoffs changed, and any remaining risks
+1. Confirm the area, goal, and proof path
+2. Reuse a recent valid review when possible, otherwise create a current-state summary
+3. Apply the smallest useful changes
+4. Run the proof path
+5. Create a post-change summary with ACRS score
+6. Report what improved and any remaining risks
+
+## Multi-agent modifier
+
+When the user explicitly mentions parallel agents or handoff:
+
+- Map ownership lanes and collision hotspots
+- Add handoff boundaries to the area profile
+- Include coordination scope in scoring
+- Prefer visible ownership and shared proof surfaces over private scratch context
+
+Otherwise default to single-agent scope.
 
 ## Guardrails
 
 - Do not treat more documentation as improvement by default.
-- Keep always-loaded guidance short and push detail into supporting files.
 - Prefer area-scoped guidance over repo-wide blanket rules.
 - Prefer executable verification over narrative claims.
-- When multi-agent work matters, prefer artifacts that reduce handoff ambiguity and conflict hotspots.
-- Never claim a transformation is safe unless the named proof path and regression checks were run, or you state that safety is unproven.
+- Never claim a transformation is safe unless the named proof path and regression checks were run, or state that safety is unproven.
+- Use compact headings and separate facts, scores, decisions, and unknowns.
+- Mark partial evidence as estimated or missing.
 
-Use compact headings and separate facts, scores, decisions, and unknowns.
-Mark partial evidence as estimated or missing.
+## References
+
+Read only when deeper detail is needed:
+
+| File | When to read |
+|---|---|
+| `references/RULE.md` | Full rule definitions with Should-level guidance and anti-patterns |
+| `references/EVALUATION.md` | Detailed scoring anchors, comparison conditions, consistency guidelines |
+| `references/CHECKLIST.md` | Step-by-step checklists for review and transform |
+| `references/node-monorepo.md` | Target is a JS/TS monorepo |
+| `references/go-service.md` | Target is a Go service |
+| `references/python-service.md` | Target is a Python service |
+| `references/MAINTENANCE.md` | Maintaining this skill package itself |

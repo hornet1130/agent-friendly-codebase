@@ -1,4 +1,0 @@
-interface:
-  display_name: "Agent Friendly Codebase"
-  short_description: "Review and transform agent-friendly work areas"
-  default_prompt: "Use $agent-friendly-codebase to review or transform a bounded work area for agent-friendly collaboration."
