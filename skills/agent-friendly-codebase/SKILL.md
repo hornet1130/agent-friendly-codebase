@@ -1,172 +1,199 @@
 ---
 name: agent-friendly-codebase
-description: Make a codebase more AI-agent-friendly. Review and transform bounded work areas so agents can find files faster, make smaller safer changes, verify results with less human help, and hand off work with low ambiguity.
+description: Audit a codebase or bounded work area for AI-agent friendliness. Use this skill whenever the user wants to know how agent-friendly their code is, asks "why does the agent keep making mistakes", wants an AFC (Agent-Friendly Codebase) assessment, mentions AFC scoring, or wants to understand what's blocking AI agents from working well in their codebase. Produces a structured audit report — findings with evidence, severity, and a prioritized improvement roadmap.
 ---
 
-# Agent-Friendly Codebase
+# Agent-Friendly Codebase Audit
 
-Apply on a **bounded work area** in one of two modes: `review` or `transform`.
+You are an **AFC audit team** conducting a structured investigation of a bounded work area. Your job is to uncover what makes this codebase hard for AI agents to work in, then tell the team exactly what's wrong and what to fix, in priority order.
+
+The core insight: agents do what's written. What isn't written gets inferred. Inference fails. That failure compounds — like autoregressive token generation, one bad early judgment poisons everything built on top of it.
+
+An agent-friendly codebase lets an agent:
+
+- reach relevant context with low exploration cost
+- make bounded changes with a predictable blast radius
+- verify changes with a short trusted proof path
+- hand off or split work with low ambiguity
 
 ## Work area
 
-A work area is a bounded unit of work defined by:
+A work area is a bounded unit of work: primary code paths, entrypoints, public contracts, build/test/lint commands, and typical change types. If the user names only a path, infer the smallest reasonable work area around it.
 
-- primary code paths
-- entrypoints
-- public contracts
-- commands used to build, run, and validate it
-- typical change types
+Examples: `apps/web/src/features/checkout`, `apps/api/src/modules/auth`, `packages/shared/http-client`
 
-If the user names only a path, infer the smallest reasonable work area around it.
+## Workflow and output
 
-## Inputs
+Follow these steps in order. The output of each step becomes a section in the final report.
 
-Infer these unless asking is necessary:
+### Step 1 — Bound the area
 
-- target area identifier or path
-- goal: `review` or `transform`
-- proof command or trusted validation path
+Identify the work area and produce the **Area profile**:
 
-## Core principles
+- Bounded paths, entrypoints, key contracts
+- Canonical commands (install, build, test, lint, dev) and proof path
+- If the user mentions parallel agents or handoff, also map ownership lanes, handoff boundaries, and collision hotspots
 
-These are the Must-level rules from `references/RULE.md`. Read the full file for Should-level guidance and anti-patterns.
+### Step 2 — Scan for friction patterns
 
-### P1. Boundary & entrypoints
+Scan the area for patterns A, B, C, D (see "The four agent-friction patterns" below). Collect evidence.
 
-- Name the primary paths for the area
-- Identify entrypoints
-- Identify important dependencies and reverse dependencies
+### Step 3 — Score
 
-### P2. Commands & environment
+Score each category S1–S5 (see "AFC Score" below). Follow the scoring discipline: evidence first, score second.
 
-- Define canonical install, build, test, lint, and dev commands or clear equivalents
-- Keep those commands reproducible inside repository conventions
-- Provide at least one automated validation path
-- Cover representative task types with tests or repeatable repro steps
+Produce the **AFC Score** section: per-category score with evidence, total, and band.
 
-### P3. Contracts & change surface
+### Step 4 — Surface findings
 
-- Expose important public contracts (routes, APIs, schemas, DTOs, env dependencies)
-- Make external system boundaries visible through types or docs
-- Make the common edit surface observable
-- Explain when cross-boundary edits are required and why
+Produce the **Findings** section. For each finding:
 
-### P4. Context hierarchy & economy
+- **Finding**: what's wrong
+- **Pattern**: A / B / C / D
+- **Evidence**: file paths, code, concrete observations
+- **Agent impact**: what an agent would do wrong because of this
 
-- Keep always-loaded rules short and high signal
-- Move detail, long examples, and domain explanations into supporting files
-- Distinguish repository-wide guidance from area-local guidance
-- Let more specific rules refine broader ones
+Order by impact, not by category.
+
+### Step 5 — Build improvement roadmap
+
+Produce the **Improvement roadmap** organized by maturity level (see "AFC maturity model" below), not by finding.
+
+- **L1 — Enforce**: tooling gates the team can add now
+- **L2 — Document**: what to write down so agents stop inferring
+- **L3 — Specify**: structural changes for machine-verified compliance
+
+Each item must be specific enough to assign — file path, threshold, artifact name.
+
+## The four agent-friction patterns
+
+Actively scan for these in Step 2. Each one is a distinct source of agent error.
+
+### Pattern A — Tacit knowledge
+
+Things the team "just knows" but aren't written anywhere. A 5-year engineer knows "this API is only called with a valid agtCode." The agent doesn't — it infers, and inference fails.
+
+Evidence: unexplained constraints, undocumented field semantics, "legacy" code with no recorded reason, business rules in Slack but not in code.
+
+### Pattern B — Code/doc divergence
+
+README says one thing, code does another. The agent can't judge which to trust. Stale docs actively poison context — worse than no docs at all.
+
+Evidence: outdated README, stale CLAUDE.md rules, comments describing what the code did months ago.
+
+### Pattern C — Competing patterns
+
+Two ways to do the same thing coexist. The agent picks by frequency, not intent. CLAUDE.md says "use Jotai" but 40 Recoil files outnumber 3 Jotai files. Frequency beats documentation.
+
+Evidence: multiple libraries for the same concern, two import styles, mixed async patterns, in-progress migration with no status marker.
+
+### Pattern D — No feedback loop
+
+Without tests the agent can't verify its own work. It reports "done" and validation falls entirely to the human. Tests are the agent's only feedback loop.
+
+Evidence: low test count, no CI gate, validation requiring manual inspection, no runnable proof path.
+
+## AFC Score
+
+5 categories, each 0–20. Total 0–100, expressed as **AFC Score (%)**.
+
+**Bands**: Good >= 80, So-so 50–79, Bad < 50
+
+### Scoring anchors
+
+| Score | Meaning |
+| ---: | --- |
+| 0 | absent — effectively unusable |
+| 5 | weak — mostly implicit |
+| 10 | partial — important gaps remain |
+| 15 | solid — moderate friction only |
+| 20 | explicit — current, low ambiguity |
+
+In-between scores allowed when evidence supports it. Must items present → above 10. Must items complete and working → 15. Should items → toward 20.
+
+### Scoring discipline
+
+1. **Evidence first, score second.** List what you found before assigning a number. Never score then justify.
+2. **Each score must cite a specific file, section, or command.** No evidence → score 0 or 5.
+3. **Default to the lower score** when between two anchors. Upgrade only with clear evidence.
+4. **Absence = 0, not unknown.** If reasonable exploration finds nothing, score 0.
+
+### S1. Boundary & entrypoints (0–20)
+
+Can the agent find where to start and where to stop?
+
+- Must: name the primary paths, entrypoints, dependencies and reverse dependencies
+- Should: document usual starting files, keep frequently edited files easy to find
+
+### S2. Commands & environment (0–20)
+
+Can the agent build, test, and run without human memory?
+
+- Must: define canonical install, build, test, lint, dev commands and keep them reproducible
+- Must: provide at least one automated validation path covering representative task types
+- Must: identify main logs, error paths, or state checkpoints
+- Should: area-scoped validation commands, common failure causes and workarounds, reusable fixtures/seeds/mocks/snapshots, regression coverage to catch obvious spillover
+- Should: debug starting points for common failures, env/config mismatch easy to check
+
+### S3. Contracts & change surface (0–20)
+
+Can the agent predict blast radius from what's visible?
+
+- Must: expose public contracts (routes, APIs, schemas, DTOs, env dependencies) and external system boundaries
+- Must: make the common edit surface observable, explain when cross-boundary edits are required
+- Should: document failure modes, include input/output examples, expose shared package blast radius, avoid turning a small feature change into a repo-wide edit
+
+### S4. Context hierarchy & economy (0–20)
+
+Is guidance high-signal, layered, and appropriately scoped?
+
+- Must: keep always-loaded rules short and high signal, push detail to supporting files
+- Must: distinguish repo-wide guidance from area-local guidance, let specific rules refine broader ones
 - Budget: root ~100-200 lines, area ~50-150 lines
+- Should: narrowing path `root → app/service → feature/package`, area-local skills close to code
 
-### P5. Examples, verification & persistence
+### S5. Examples, verification & persistence (0–20)
 
-- Provide at least one canonical or recent example for a representative task type
-- Externalize recurring patterns, mistakes, and conventions into docs, skills, tests, or ADRs
-- Identify the main logs, error paths, or state checkpoints for the area
-- Define a lightweight review rubric and proof path for day-to-day work
+Can the agent learn from examples and verify its own work?
 
-## Scoring model
+- Must: provide at least one canonical example for a representative task type
+- Must: externalize recurring patterns, mistakes, conventions into docs, skills, tests, or ADRs
+- Must: define a lightweight audit rubric and proof path
+- Should: cover recurring tasks with diffs/PRs, structured gotchas and debug notes, explicit place for learned patterns, keep proof outputs when changes matter
 
-The snapshot score is `ACRS` (Agent Codebase Readiness Score): `S1 + S2 + S3 + S4 + S5`, range `0..20`.
+## AFC maturity model
 
-| Category                                 | Evaluates                                                           |
-| ---------------------------------------- | ------------------------------------------------------------------- |
-| S1. Boundary & entrypoints               | Are area boundary, entrypoints, and starting files explicit?        |
-| S2. Commands & environment               | Do canonical build/test/proof paths exist with low setup ambiguity? |
-| S3. Contracts & change surface           | Are contract surfaces and blast radius explicit and traceable?      |
-| S4. Context hierarchy & economy          | Is guidance high-signal, layered, and low-duplication?              |
-| S5. Examples, verification & persistence | Are examples, verification, and knowledge capture easy to find?     |
+Use these levels to frame improvement recommendations in Step 5. Each level is independently valuable.
 
-Each category is scored `0-4`:
+### L1 — Safety net: make wrong things impossible
 
-| Score | Meaning                                                |
-| ----: | ------------------------------------------------------ |
-|     0 | absent — effectively unusable                          |
-|     1 | weak — mostly implicit                                 |
-|     2 | partial — important gaps remain                        |
-|     3 | solid — works for normal tasks, moderate friction only |
-|     4 | explicit — current, low ambiguity                      |
+Enforce via tooling. `lint`, `tsc`, `build`, `test` give immediate pass/fail.
 
-Bands: **good** `>=16`, **so-so** `10-15`, **bad** `<10`.
+> CLAUDE.md can say "don't use Recoil" — but subagents may never see CLAUDE.md. A `no-restricted-imports` lint rule fires every time.
 
-Read `references/EVALUATION.md` for detailed per-category anchor interpretations, fixed comparison conditions, and scoring consistency guidelines.
+Examples: `no-restricted-imports`, pre-commit hooks on generated files, `strict` TS + no `as any`, coverage ratchet, codegen drift check.
 
-## Output contract
+### L2 — Explicitness: make tacit knowledge explicit
 
-### `review`
+Document what tooling can't enforce. Reduce inference.
 
-Produce:
+Examples: single canonical pattern per problem, pipeline docs (source → generator → output → trigger), directory structure in CLAUDE.md, migration status table, "why" comments, domain glossary.
 
-- area boundary summary
-- key entrypoints, contracts, and search starting points
-- canonical command and proof path summary
-- ACRS readiness snapshot score with per-category breakdown
-- top agent-friction gaps
-- smallest useful next improvements
+> CLAUDE.md at app/package root only. More than that and noise exceeds signal.
 
-### `transform`
+### L3 — Spec-driven: specs as input, machines verify compliance
 
-Produce:
+The clearest input for an agent is a specification. Compliance is machine-verified.
 
-- the scoped area and agreed proof path
-- a current-state summary, unless a still-valid review result can be reused
-- the smallest changes that improve the target area
-- proof results
-- a post-change summary with ACRS score
-- what improved
-- remaining risks
+Examples: SPEC.md → schema → test → implementation, Storybook stories as visual specs, scaffold generators, required SPEC.md per module.
 
-Prefer the smallest high-value diff over broad cleanups.
-
-## Workflow
-
-### `review`
-
-1. Bound the area
-2. Map entrypoints, contracts, and commands
-3. Score the current readiness snapshot (ACRS)
-4. Report the biggest gaps and next actions
-
-### `transform`
-
-1. Confirm the area, goal, and proof path
-2. Reuse a recent valid review when possible, otherwise create a current-state summary
-3. Apply the smallest useful changes
-4. Run the proof path
-5. Create a post-change summary with ACRS score
-6. Report what improved and any remaining risks
-
-## Multi-agent modifier
-
-When the user explicitly mentions parallel agents or handoff:
-
-- Map ownership lanes and collision hotspots
-- Add handoff boundaries to the area profile
-- Include coordination scope in scoring
-- Prefer visible ownership and shared proof surfaces over private scratch context
-
-Otherwise default to single-agent scope.
+> L1 blocks what's forbidden. L3 verifies what's required.
 
 ## Guardrails
 
-- Do not treat more documentation as improvement by default.
+- More documentation is not improvement by default. Noisy docs burn context.
 - Prefer area-scoped guidance over repo-wide blanket rules.
 - Prefer executable verification over narrative claims.
-- Never claim a transformation is safe unless the named proof path and regression checks were run, or state that safety is unproven.
-- Use compact headings and separate facts, scores, decisions, and unknowns.
+- Prefer a few high-value artifacts over documentation sprawl.
+- Be specific. "Add tests" is not a finding. Name the file, the gap, the impact.
 - Mark partial evidence as estimated or missing.
-
-## References
-
-Read only when deeper detail is needed:
-
-| File                           | When to read                                                            |
-| ------------------------------ | ----------------------------------------------------------------------- |
-| `references/RULE.md`           | Full rule definitions with Should-level guidance and anti-patterns      |
-| `references/EVALUATION.md`     | Detailed scoring anchors, comparison conditions, consistency guidelines |
-| `references/CHECKLIST.md`      | Step-by-step checklists for review and transform                        |
-| `references/node-monorepo.md`  | Target is a JS/TS monorepo                                              |
-| `references/go-service.md`     | Target is a Go service                                                  |
-| `references/python-service.md` | Target is a Python service                                              |
-| `references/MAINTENANCE.md`    | Maintaining this skill package itself                                   |
