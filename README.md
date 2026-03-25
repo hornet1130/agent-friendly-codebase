@@ -44,8 +44,8 @@ Then frames improvements using the **AFC maturity model**:
 ## How to Ask
 
 ```
-Use agent-friendly-codebase to audit apps/api/src/modules/auth
-Use agent-friendly-codebase to audit the checkout area
+Use agent-friendly-codebase to audit apps/web
+Use agent-friendly-codebase to audit packages/shared/http-client
 Use agent-friendly-codebase on this repo
 ```
 

@@ -18,9 +18,15 @@ An agent-friendly codebase lets an agent:
 
 ## Work area
 
-A work area is a bounded unit of work: primary code paths, entrypoints, public contracts, build/test/lint commands, and typical change types. If the user names only a path, infer the smallest reasonable work area around it.
+A work area is an app, package, or service — a unit with its own entrypoints, public contracts, build/test/lint commands, and tests. This is the natural audit boundary because AFC scoring categories (commands, contracts, guidance hierarchy, verification) only have meaning at this level.
 
-Examples: `apps/web/src/features/checkout`, `apps/api/src/modules/auth`, `packages/shared/http-client`
+If the user points at a file, function, or feature directory, expand scope to the app or package it belongs to.
+
+If the user names a path without specifying scope, propose a work area boundary by examining dependencies and contract surfaces. Present the proposed boundary for confirmation before proceeding.
+
+If the area is too large for a single audit pass (e.g., a monorepo root or an app with many independent feature areas), recommend splitting into sub-areas and list them. Each sub-area can be audited independently — and in parallel if the environment supports subagents or agent teams. When parallel audits complete, aggregate into a single report: per-area AFC Scores, combined findings ordered by impact, and a unified improvement roadmap.
+
+Examples: `apps/web`, `apps/api`, `packages/shared/http-client`
 
 ## Workflow and output
 
